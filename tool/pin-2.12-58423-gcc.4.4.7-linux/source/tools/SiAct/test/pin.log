@@ -1,0 +1,2 @@
+Pin 2.12 kit 58423
+E: fault_inst.H:166: IARG_MEMORY*_EA is only valid at IPOINT_BEFORE
