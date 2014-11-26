@@ -1,0 +1,2 @@
+1. Add seeding to xorshift
+

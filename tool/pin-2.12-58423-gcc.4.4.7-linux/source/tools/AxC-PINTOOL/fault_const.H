@@ -1,0 +1,6 @@
+#ifndef FAULT_CONST_H
+#define FAULT_CONST_H
+
+float FAULT_P_BITFLIP_ERROR=0;
+int FAULT_N_FLIP_BITS=1;
+#endif
