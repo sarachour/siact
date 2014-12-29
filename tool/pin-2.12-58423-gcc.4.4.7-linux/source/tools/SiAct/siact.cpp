@@ -83,7 +83,6 @@ KNOB<BOOL>   KnobErrorInjection(KNOB_MODE_WRITEONCE, "pintool",
     "e", "0", "Inject Errors");
 KNOB<BOOL>   KnobErrorInjectionEverywhere(KNOB_MODE_WRITEONCE, "pintool",
     "w", "0", "Inject Errors everywhere");
-
 /* ===================================================================== */
 
 INT32 Usage()

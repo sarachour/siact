@@ -183,6 +183,7 @@ KNOB<string> KnobHardwareSpecFile(KNOB_MODE_WRITEONCE, "pintool",
   "hwmodel", "hardwareModel.txt", "specify mappings to a hardware model");
 
 
+KNOB<INT> KnobGlobalSeed (KNOB_MODE_WRITEONCE, "pintool", "s", "0", "Set global seed");
 
 void print_hardware_fault_model(FILE * out){
   fprintf(out, "Hardware Fault Model Info\n");
@@ -243,7 +244,7 @@ void readHardwareFaultModelFile(){
               //1 bit-flip-prob=0.1 err-bits=9
               sscanf(output.c_str(), "%d	name=%s	seed=%d", &idx, name, &seed);
               hw_info_t templ = hw_models[name];
-              templ.srand = seed;
+              templ.srand = KnobGlobalSeed.Value() + seed;
               templ.idx = idx;
               hw_model_list.push_back(templ);
 
