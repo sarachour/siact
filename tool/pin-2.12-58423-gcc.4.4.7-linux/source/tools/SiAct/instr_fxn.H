@@ -56,99 +56,22 @@ bool is_in_function_list(string functionName)
 
 }
 
-
-bool is_task_begin(string functionName){
-	string libFxnName = "PIN_START_TASK";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found Start Task:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);
-}
-
-bool is_task_end(string functionName){
-	string libFxnName = "PIN_STOP_TASK";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found Stop Task:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);
-}
-bool is_refresh_dram(string functionName){	
-	string libFxnName = "PIN_REFRESH_DRAM";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found DRAM Refresh function:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);
-}
-bool is_hw_bind(string functionName){	
-	string libFxnName = "PIN_BIND_MODEL";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found HW Function:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);
-}
-
-bool is_timer_start(string functionName){
-	string libFxnName = "PIN_START_TIMER";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found Start Timer Function:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);	
-}
-
-bool is_timer_end(string functionName){
-	string libFxnName = "PIN_STOP_TIMER";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found Stop Timer Function:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);	
-}
-bool is_start_inject(string functionName){
-	string libFxnName = "PIN_START_INJECT_ERRORS";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found Start Inject Errors Function:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);	
-}
-bool is_stop_inject(string functionName){
-	string libFxnName = "PIN_STOP_INJECT_ERRORS";
-	
-	if( ( libFxnName == functionName ) )
-	{
-		cout << "[PIN] Found Stop Inject Errors Function:  " << functionName << endl;
-		return(true);
-	}
-	else 
-		return(false);	
-}
-
+#define test_name(fxn,name, msg) \
+		if( name == fxn) { \
+			cout << "[PIN] " << msg <<": "<<name<<endl; \
+			return true; \
+		} \
+		else return false;
+		
+bool is_task_begin(string functionName){ test_name(functionName, "PIN_START_TASK", "Found Start Task"); }
+bool is_task_end(string functionName){ test_name(functionName, "PIN_STOP_TASK", "Found Stop Task");}
+bool is_refresh_dram(string functionName){	test_name(functionName, "PIN_REFRESH_DRAM", "Found DRAM Refresh Function");}
+bool is_hw_bind(string functionName){	test_name(functionName, "PIN_BIND_MODEL", "Found Hardware Binding Function");}
+bool is_timer_start(string functionName){test_name(functionName, "PIN_START_TIMER", "Found Start Timer Function");}
+bool is_timer_end(string functionName){test_name(functionName, "PIN_STOP_TIMER", "Found Stop Timer Function");}
+bool is_start_inject(string functionName){test_name(functionName, "PIN_START_INJECT_ERRORS", "Found Injection Starting Function");}
+bool is_stop_inject(string functionName){test_name(functionName, "PIN_STOP_INJECT_ERRORS", "Found Injection Stopping Function");}
+bool is_urel_alloc(string functionName){test_name(functionName, "PIN_UREL_MALLOC", "Found Unreliable Malloc Function");}
 
 typedef enum FUNCTION_TYPE_T {
 	PIN_STOP_TIMER,
@@ -160,7 +83,8 @@ typedef enum FUNCTION_TYPE_T {
 	PIN_STOP_INJECT_ERRORS,
 	PIN_NORMAL,
 	PIN_DRAM_REFRESH,
-	PIN_LISTED_FUNCTION
+	PIN_LISTED_FUNCTION,
+	PIN_ALLOC_UREL
 } function_type_t;
 
 function_type_t get_function_type(string functionName){
@@ -180,6 +104,8 @@ function_type_t get_function_type(string functionName){
 			return PIN_BIND_FXN;
 		else if(is_refresh_dram(functionName))
 			return PIN_DRAM_REFRESH;
+		else if(is_urel_alloc(functionName))
+			return PIN_ALLOC_UREL;
 		else if(is_in_function_list(functionName))
 			return PIN_LISTED_FUNCTION;
 		else

@@ -215,6 +215,7 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS
     return hit;
 }
 
+/*
 namespace DL1
 {
     
@@ -263,7 +264,6 @@ VOID LoadMultiFast(ADDRINT addr, UINT32 size, UINT64* L1AccessCount, UINT64* L1M
 
 }
 
-/* ===================================================================== */
 
 VOID StoreMultiFast(ADDRINT addr, UINT32 size, UINT64* L1AccessCount, UINT64* L1MissCount, UINT64* L2AccessCount, UINT64* L2MissCount)
 {
@@ -275,7 +275,6 @@ VOID StoreMultiFast(ADDRINT addr, UINT32 size, UINT64* L1AccessCount, UINT64* L1
 
 }
 
-/* ===================================================================== */
 
 VOID LoadSingleFast(ADDRINT addr, UINT64* L1AccessCount, UINT64* L1MissCount, UINT64* L2AccessCount, UINT64* L2MissCount)
 {
@@ -287,7 +286,6 @@ VOID LoadSingleFast(ADDRINT addr, UINT64* L1AccessCount, UINT64* L1MissCount, UI
 
 }
 
-/* ===================================================================== */
 
 VOID StoreSingleFast(ADDRINT addr, UINT64* L1AccessCount, UINT64* L1MissCount, UINT64* L2AccessCount, UINT64* L2MissCount)
 {
@@ -309,8 +307,6 @@ VOID StoreMultiFast_AxC(ADDRINT addr, UINT32 size, UINT64* L1AccessCount, UINT64
 
 }
 
-/* ===================================================================== */
-
 VOID LoadSingleFast_AxC(ADDRINT addr, UINT64* L1AccessCount, UINT64* L1MissCount, UINT64* L2AccessCount, UINT64* L2MissCount)
 {
     
@@ -321,7 +317,6 @@ VOID LoadSingleFast_AxC(ADDRINT addr, UINT64* L1AccessCount, UINT64* L1MissCount
 
 }
 
-/* ===================================================================== */
 
 VOID StoreSingleFast_AxC(ADDRINT addr, UINT64* L1AccessCount, UINT64* L1MissCount, UINT64* L2AccessCount, UINT64* L2MissCount)
 {

@@ -84,6 +84,7 @@ class CACHE_BASE
     virtual bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, UINT64* memAccessCount, UINT64* memMissCount) = 0;
     virtual bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, UINT64* memAccessCount, UINT64* memMissCount) = 0;
     virtual void ReadData(UINT8 * data) = 0;
+    virtual void Report() = 0;
 };
 
 
@@ -103,7 +104,10 @@ class CACHE : public CACHE_BASE
 
   public:
     // constructors/destructors
-    CACHE(std::string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity);
+    CACHE(std::string name, 
+		  UINT32 cacheSize, 
+		  UINT32 lineSize, 
+		  UINT32 associativity);
 
     // modifiers
     /// Cache access from addr to addr+size-1
@@ -111,6 +115,7 @@ class CACHE : public CACHE_BASE
     /// Cache access at addr that does not span cache lines
     bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, UINT64* memAccessCount, UINT64* memMissCount);
     void ReadData(UINT8 * data);
+    void Report();
 };
 
 /*!
@@ -118,9 +123,9 @@ class CACHE : public CACHE_BASE
  */
 
 // define shortcuts
-#define CACHE_DIRECT_MAPPED(MAX_SETS, ALLOCATION) CACHE<CACHE_SET::DIRECT_MAPPED, MAX_SETS, ALLOCATION>
-#define CACHE_ROUND_ROBIN(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) CACHE<CACHE_SET::ROUND_ROBIN<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
-#define CACHE_LRU(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) CACHE<CACHE_SET::LRU<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
+#define CACHE_DIRECT_MAPPED(MAX_SETS, ALLOCATION) CACHE<DIRECT_MAPPED, MAX_SETS, ALLOCATION>
+#define CACHE_ROUND_ROBIN(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) CACHE<ROUND_ROBIN<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
+#define CACHE_LRU(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) CACHE<LRU<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
 
 #endif // PIN_CACHE_Ha
 

@@ -50,7 +50,7 @@ END_LEGAL */
 #include "hw_fault_model.H"
 #include "fault_inst.H"
 #include "instr_fxn.H"
-#include "cache.H"
+#include "hierarchy.H"
 #include <vector>
 #include <map>
 #include <algorithm> // for sort
@@ -101,7 +101,6 @@ INT32 Usage()
 
 
 bool INJECT = false;
-
 
 /* ===================================================================== */
 
