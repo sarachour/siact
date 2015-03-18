@@ -52,7 +52,7 @@ void ApproximateHierarchy::load(ADDRINT * data, UINT32 size){
 	}
 	else{
 		//printf("L1 MISS\n");
-		bool L2_HIT = L2->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_LOAD);
+		bool L2_HIT = L2->Access((ADDRINT) data,size,CACHE_BASE::ACCESS_TYPE_LOAD);
 		if(L2_HIT){
 			//printf("L2 HIT\n");
 			L2->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_LOAD);
@@ -65,7 +65,24 @@ void ApproximateHierarchy::load(ADDRINT * data, UINT32 size){
 	}
 }
 void ApproximateHierarchy::store(ADDRINT * data, UINT32 size){
-	
+	bool L1_HIT = L1D->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_STORE);
+	if(L1_HIT){
+		//printf("L1 HIT\n");
+		L1D->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_STORE);
+	}
+	else{
+		//printf("L1 MISS\n");
+		bool L2_HIT = L2->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_STORE);
+		if(L2_HIT){
+			//printf("L2 HIT\n");
+			L2->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_STORE);
+		}
+		else{
+			//printf("L2 MISS\n");
+			//printf("TO MAIN MEM\n");
+			//TODO
+		}
+	}
 }
 void ApproximateHierarchy::alloc(ADDRINT * data, UINT32 size){
 	

@@ -33,9 +33,7 @@ class CACHE_BASE
     {
         ACCESS_TYPE_LOAD,
         ACCESS_TYPE_STORE,
-        ACCESS_TYPE_NUM,
-        ACCESS_TYPE_APPROX_LOAD,
-        ACCESS_TYPE_APPROX_STORE
+        ACCESS_TYPE_NUM
     } ACCESS_TYPE;
     
 

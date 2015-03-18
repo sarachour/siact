@@ -6,7 +6,12 @@ template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::APPROXCACHE(string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity, ApproximateCacheModel model):
 	CACHE_BASE(name, cacheSize, lineSize, associativity)
 {
-	
+	ASSERTX(NumSets() <= MAX_SETS);
+
+	for (UINT32 i = 0; i < NumSets(); i++)
+	{
+		_sets[i].SetAssociativity(associativity);
+	}
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
