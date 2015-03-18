@@ -24,22 +24,70 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType){
-	return true;
+	const ADDRINT highAddr = addr + size;
+    bool allHit = true;
+
+    const ADDRINT lineSize = LineSize();
+    const ADDRINT notLineMask = ~(lineSize - 1);
+    do
+    {
+        CACHE_TAG tag;
+        UINT32 setIndex;
+
+        SplitAddress(addr, tag, setIndex);
+
+        SET & set = _sets[setIndex];
+
+        bool localHit = set.Find(tag);
+        allHit &= localHit;
+
+
+        // on miss, loads always allocate, stores optionally
+        if ( (! localHit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
+        {
+            set.Replace(tag);
+        }
+
+        addr = (addr & notLineMask) + lineSize; // start of next cache line
+    }
+    while (addr < highAddr);
+
+    _access[accessType][allHit]++; //hit/miss count of the cache
+
+    return allHit;
 }
 /// Cache access at addr that does not span cache lines
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType){
-	return true;
+	CACHE_TAG tag;
+    UINT32 setIndex;
+
+    SplitAddress(addr, tag, setIndex);
+
+    SET & set = _sets[setIndex];
+
+    bool hit = set.Find(tag);
+
+
+    // on miss, loads always allocate, stores optionally
+    if ( (! hit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
+    {
+        set.Replace(tag);
+    }
+
+    _access[accessType][hit]++; //hit/miss count of the cache
+
+    return hit;
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ReadData(UINT8 * data){
+void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, ACCESS_TYPE accessType){
 
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(){
-
+	printf("%s\n", this->StatsLong("",CACHE_TYPE_DCACHE).c_str());
 }
 
 APPROXMEMORY::APPROXMEMORY(ApproximateMemoryModel model){

@@ -108,12 +108,7 @@ string CACHE_BASE::StatsLong(string prefix, CACHE_TYPE cache_type) const
     return out;
 }
 
-void CACHE_BASE::Description(){
-	printf("CACHE %s\n", this->Name().c_str());
-	printf("Line Size: %d\n", this->LineSize());
-	printf("Cache Size: %d\n", this->CacheSize());
-	printf("Associativity: %d\n", this->Associativity());
-}
+
 // constructors/destructors
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
@@ -201,7 +196,15 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::ReadData(UINT8 * data){
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
+	printf("CACHE %s\n", this->Name().c_str());
+	printf("Line Size: %d\n", this->LineSize());
+	printf("Cache Size: %d\n", this->CacheSize());
+	printf("Associativity: %d\n", this->Associativity());
+}
+
+template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, ACCESS_TYPE accessType){
 	
 }
 
@@ -210,10 +213,6 @@ void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(){
 	
 }
 
-template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
-	CACHE_BASE::Description();
-}
 
 template class CACHE_LRU(16*KILO, 64, STORE_ALLOCATE);
 template class CACHE_LRU(64 * KILO, 64, STORE_ALLOCATE);

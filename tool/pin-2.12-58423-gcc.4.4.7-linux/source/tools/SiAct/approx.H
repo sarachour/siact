@@ -39,7 +39,7 @@ class APPROXCACHE : public CACHE_BASE{
 		bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType);
 		/// Cache access at addr that does not span cache lines
 		bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType);
-		void ReadData(UINT8 * data);
+		void ProcessData(UINT8 * data, ACCESS_TYPE accessType);
 		void Report();
 		void Description();
 };

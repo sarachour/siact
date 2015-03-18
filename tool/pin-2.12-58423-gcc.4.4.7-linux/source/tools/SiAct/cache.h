@@ -84,11 +84,6 @@ class CACHE_BASE
     VOID SplitAddress(const ADDRINT addr, CACHE_TAG & tag, UINT32 & setIndex) const;
     VOID SplitAddress(const ADDRINT addr, CACHE_TAG & tag, UINT32 & setIndex, UINT32 & lineIndex) const;
     string StatsLong(string prefix = "", CACHE_TYPE = CACHE_TYPE_DCACHE) const;
-    virtual bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType) = 0;
-    virtual bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType) = 0;
-    virtual void ReadData(UINT8 * data) = 0;
-    virtual void Report() = 0;
-    virtual void Description();
 };
 
 
@@ -118,7 +113,7 @@ class CACHE : public CACHE_BASE
     bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType);
     /// Cache access at addr that does not span cache lines
     bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType);
-    void ReadData(UINT8 * data);
+    void ProcessData(UINT8 * data, ACCESS_TYPE accessType);
     void Report();
     void Description();
 };

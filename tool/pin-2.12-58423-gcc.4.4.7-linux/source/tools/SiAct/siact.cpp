@@ -99,6 +99,7 @@ INT32 Usage()
     return -1;
 }
 
+extern Tuple<PreciseHierarchy,ApproximateHierarchy> * memory;
 
 bool INJECT = false;
 
@@ -242,6 +243,8 @@ VOID Fini(int, VOID * v)
 
     out = fopen(filename.c_str(), "w");
 	print_all(out);
+	if(memory->hasFirst()) memory->first()->report();
+	else memory->second()->report();
 	fclose(out);
 
 

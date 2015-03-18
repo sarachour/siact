@@ -45,7 +45,24 @@ ApproximateHierarchy::ApproximateHierarchy(UINT32 l1i_cachesize, UINT32 l1i_line
 	MEM = new APPROXMEMORY(Mm);
 }
 void ApproximateHierarchy::load(ADDRINT * data, UINT32 size){
-	
+	bool L1_HIT = L1D->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_LOAD);
+	if(L1_HIT){
+		//printf("L1 HIT\n");
+		L1D->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_LOAD);
+	}
+	else{
+		//printf("L1 MISS\n");
+		bool L2_HIT = L2->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_LOAD);
+		if(L2_HIT){
+			//printf("L2 HIT\n");
+			L2->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_LOAD);
+		}
+		else{
+			//printf("L2 MISS\n");
+			//printf("TO MAIN MEM\n");
+			//TODO
+		}
+	}
 }
 void ApproximateHierarchy::store(ADDRINT * data, UINT32 size){
 	
@@ -54,12 +71,24 @@ void ApproximateHierarchy::alloc(ADDRINT * data, UINT32 size){
 	
 }
 void ApproximateHierarchy::report(){
-	
+	printf("#### REPORT ######\n");
+	printf("Approximate Hierarchy\n");
+	printf("===== Caches =====\n");
+	L1I->Report();
+	printf("-----------------\n");
+	L1D->Report();
+	printf("-----------------\n");
+	L2->Report();
+	printf("-----------------\n");
+	printf("===== Main Memory =====\n");
+	MEM->Report();
+	printf("-----------------\n");
 }
 void ApproximateHierarchy::elapsed(UINT64 msec){
-	
+
 }
 void ApproximateHierarchy::description(){
+	printf("#### DESCRIPTION ######\n");
 	printf("Approximate Hierarchy\n");
 	printf("===== Caches =====\n");
 	L1I->Description();
