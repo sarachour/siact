@@ -7,29 +7,25 @@
  * APPROXIMATE CACHE THAT TRACKS WHETHER A LINE IS UNRELIABLE OR NOT
  * 
  */
-extern "C" {
 
-	typedef enum {
-		CacheModelMedium,
-		CacheModelHeavy,
-		CacheModelNone
-	} ApproximateCacheModel;
 
-	typedef enum {
-		MemoryModelStatic,
-		MemoryModelDynamic,
-		MemoryModelNone
-	} ApproximateMemoryModel;
+typedef enum APPROXIMATE_CACHE_MODEL_T {
+	CacheModelMedium,
+	CacheModelHeavy,
+	CacheModelNone
+} ApproximateCacheModel;
 
-}
+typedef enum APPROXIMATE_MEMORY_MODEL_T{
+	MemoryModelStatic,
+	MemoryModelDynamic,
+	MemoryModelNone
+} ApproximateMemoryModel;
+
+
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 class APPROXCACHE : public CACHE_BASE{
 	private:
 		SET _sets[MAX_SETS];
-		UINT64 approx_lines;
-		UINT64 precise_lines;
-		const float PROB_READ_CORRUPT;
-		const float PROB_WRITE_CORRUPT;
 		ApproximateCacheModel model;
 	public:
 		// constructors/destructors
@@ -37,17 +33,15 @@ class APPROXCACHE : public CACHE_BASE{
 				UINT32 cacheSize, 
 				UINT32 lineSize, 
 				UINT32 associativity, 
-				float PREAD, 
-				float PWRITE);
+				ApproximateCacheModel model);
 		// modifiers
-		/// Cache access from addr to addr+size-1
-		void SetModel(ApproximateCacheModel c);
+		//determine if access should be unreliable
 		bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType);
 		/// Cache access at addr that does not span cache lines
 		bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType);
 		void ReadData(UINT8 * data);
 		void Report();
-	
+		void Description();
 };
 #define APPROX_CACHE_DIRECT_MAPPED(MAX_SETS, ALLOCATION) APPROXCACHE<DIRECT_MAPPED, MAX_SETS, ALLOCATION>
 #define APPROX_CACHE_ROUND_ROBIN(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) APPROXCACHE<ROUND_ROBIN<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
@@ -72,8 +66,9 @@ class APPROXMEMORY : public MEMORY_BASE {
 		DRAM_ALARM.SetAlarm(INSTRUCTIONS_PER_MILLISECOND, CORRUPT_DRAM_CALLBACK, &DRAM_ALARM);
 	*/
 	public:
-		void setModel(ApproximateMemoryModel model);
+		APPROXMEMORY(ApproximateMemoryModel model);
 		void Report();
+		void Description();
 	
 };
 #endif

@@ -42,10 +42,7 @@ VOID InstrumentNormalInstruction(INS ins){
     else 
 		approx_mem = memory->second();
         // Iterate over each memory operand of the instruction.
-    if(ban){
-		printf("banned\n");
-		return;
-	}
+
     for (UINT32 memOp = 0; memOp < memOperands; memOp++)
     {
 		UINT8 memOpSize = INS_MemoryOperandSize(ins, memOp);
@@ -55,7 +52,7 @@ VOID InstrumentNormalInstruction(INS ins){
                 ins, IPOINT_BEFORE, (AFUNPTR) (memory->hasFirst() ? siPrecLoadMem : siApproxLoadMem),
                 IARG_MEMORYOP_EA, memOp,
                 IARG_UINT32, memOpSize,
-                IARG_BOOL, INS_IsStackRead(ins) || INS_IsIpRelRead(ins),
+                IARG_BOOL, (INS_IsStackRead(ins) || INS_IsIpRelRead(ins)) && !ban,
                 IARG_END);
         }
         // Note that in some architectures a single memory operand can be 
@@ -64,10 +61,10 @@ VOID InstrumentNormalInstruction(INS ins){
         if (INS_MemoryOperandIsWritten(ins, memOp) && INS_HasFallThrough(ins))
         {
            INS_InsertPredicatedCall(
-                ins, IPOINT_AFTER, (AFUNPTR) (memory->hasFirst() ? siPrecStoreMem : siPrecStoreMem),
+                ins, IPOINT_AFTER, (AFUNPTR) (memory->hasFirst() ? siPrecStoreMem : siApproxStoreMem),
                 IARG_MEMORYOP_EA, memOp,
                 IARG_UINT32, memOpSize,
-                IARG_BOOL, INS_IsStackWrite(ins) || INS_IsIpRelRead(ins),
+                IARG_BOOL, (INS_IsStackWrite(ins) || INS_IsIpRelRead(ins)) && !ban,
                 IARG_END);
         }
     }

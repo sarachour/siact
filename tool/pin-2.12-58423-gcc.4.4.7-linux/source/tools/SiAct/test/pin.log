@@ -1,3 +1,2 @@
 Pin 2.12 kit 58423
-E: fault_inst.H:79 cannot insert IPOINT_AFTER on an instruction without a fall-through path
-     137 0x0000000000400a52 call 0x4009f2
+E: Unable to load /mnt/hgfs/sachour/Documents/git/research/topaz/emul/siact/tool/pin-2.12-58423-gcc.4.4.7-linux/source/tools/SiAct/test/../obj-intel64/siact.so: /mnt/hgfs/sachour/Documents/git/research/topaz/emul/siact/tool/pin-2.12-58423-gcc.4.4.7-linux/source/tools/SiAct/test/../obj-intel64/siact.so: undefined symbol: _ZN5CACHEI3LRUILj64EELj65536ELj0EEC1ESsjjj

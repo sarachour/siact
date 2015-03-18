@@ -12,7 +12,7 @@ class PreciseHierarchy {
 		CACHE_LRU(16 * KILO, 64, STORE_ALLOCATE) * L1D;
 		//l2 cache
 		CACHE_LRU(64 * KILO, 64, STORE_ALLOCATE) * L2;
-		MEMORY MEM;
+		MEMORY * MEM;
 	public:
 		 PreciseHierarchy(UINT32 l1i_cachesize, UINT32 l1i_linesize, UINT32 l1i_assoc,
 			UINT32 l1d_cachesize, UINT32 l1d_linesize, UINT32 l1d_assoc,
@@ -27,7 +27,7 @@ class ApproximateHierarchy {
 		CACHE_LRU(16 * KILO, 64, STORE_ALLOCATE) * L1I;
 		APPROX_CACHE_LRU(16 * KILO, 64, STORE_ALLOCATE) * L1D;
 		APPROX_CACHE_LRU(64 * KILO, 64, STORE_ALLOCATE) * L2;
-		APPROXMEMORY MEM;
+		APPROXMEMORY * MEM;
 		MEMORY_ADDR_RANGES RANGES;
 	public:
 		 ApproximateHierarchy(UINT32 l1i_cachesize, UINT32 l1i_linesize, UINT32 l1i_assoc,

@@ -70,6 +70,7 @@ class CACHE_BASE
     CACHE_BASE(std::string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity);
 
     // accessors
+    std::string Name() const {return _name; }
     UINT32 CacheSize() const { return _cacheSize; }
     UINT32 LineSize() const { return _lineSize; }
     UINT32 Associativity() const { return _associativity; }
@@ -87,6 +88,7 @@ class CACHE_BASE
     virtual bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType) = 0;
     virtual void ReadData(UINT8 * data) = 0;
     virtual void Report() = 0;
+    virtual void Description();
 };
 
 
@@ -117,6 +119,7 @@ class CACHE : public CACHE_BASE
     bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType);
     void ReadData(UINT8 * data);
     void Report();
+    void Description();
 };
 
 /*!

@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <assert.h>
+#include "stdio.h"
 
 
 CACHE_STATS CACHE_BASE::SumAccess(bool hit) const
@@ -107,7 +108,12 @@ string CACHE_BASE::StatsLong(string prefix, CACHE_TYPE cache_type) const
     return out;
 }
 
-
+void CACHE_BASE::Description(){
+	printf("CACHE %s\n", this->Name().c_str());
+	printf("Line Size: %d\n", this->LineSize());
+	printf("Cache Size: %d\n", this->CacheSize());
+	printf("Associativity: %d\n", this->Associativity());
+}
 // constructors/destructors
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>

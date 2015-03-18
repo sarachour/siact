@@ -95,6 +95,7 @@ VOID load_hardware_fault_model(ADDRINT model_ptr){
 
 }
 
+#define streq(a,b) (strcmp(a,b) == 0)
 void readHardwareFaultModelFile(){
   std::ifstream myReadFile;
   cout << "[HARDWARE] LOADING FAULT MODEL FROM FILE: "  << KnobHardwareSpecFile.Value().c_str() << endl;
@@ -123,7 +124,7 @@ void readHardwareFaultModelFile(){
               uint32_t seed;
               hw_info_t templ;
               //1 bit-flip-prob=0.1 err-bits=9
-              sscanf(output.c_str(), "%d seed=%d type=%s,%s,%s l1i=%d,%d,%d l1d=%d,%d,%d l2=%d,%d,%d", 
+              sscanf(output.c_str(), "%d seed=%d type=%s cache-type=%s mem-type=%s l1i=%d,%d,%d l1d=%d,%d,%d l2=%d,%d,%d", 
 				&idx, &seed,
 				overalltype, sramtype, dramtype, 
 				&l1i_cache, &l1i_line,&l1i_assoc,
@@ -132,31 +133,31 @@ void readHardwareFaultModelFile(){
               
               templ.srand = KnobGlobalSeed.Value() + seed;
               templ.idx = idx;
-              if(strcmp(sramtype, "medium")){
+              if(streq(sramtype, "medium")){
 				  l1dmodel = l2model = CacheModelMedium;
 			  }
-			  else if(strcmp(sramtype, "heavy")){
+			  else if(streq(sramtype, "heavy")){
 				  l1dmodel = l2model = CacheModelHeavy;
 			  }
 			  else{
 				  l1dmodel = l2model = CacheModelNone;
 			  }
-			  if(strcmp(dramtype, "static")){
+			  if(streq(dramtype, "static")){
 				  memmodel = MemoryModelStatic;
 			  }
-			  else if(strcmp(sramtype, "dynamic")){
+			  else if(streq(sramtype, "dynamic")){
 				  memmodel = MemoryModelDynamic;
 			  }
 			  else {
 				  memmodel = MemoryModelNone;
 			  }
-              if(strcmp(overalltype, "precise")){
+              if(streq(overalltype, "precise")){
 				  templ.mem = new Tuple<PreciseHierarchy,ApproximateHierarchy>(new PreciseHierarchy(
 					l1i_cache, l1i_line, l1i_assoc,
 					l1d_cache, l1d_line, l1d_assoc,
 					l2_cache, l2_line, l2_assoc));
 			  }
-			  else if(strcmp(overalltype, "approximate")){
+			  else if(streq(overalltype, "approximate")){
 				   templ.mem = new Tuple<PreciseHierarchy,ApproximateHierarchy>(
 						new ApproximateHierarchy(
 						l1i_cache, l1i_line, l1i_assoc,
