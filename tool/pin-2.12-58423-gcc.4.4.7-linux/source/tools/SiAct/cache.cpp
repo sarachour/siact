@@ -117,7 +117,13 @@ void CACHE_BASE::Description(){
 // constructors/destructors
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-CACHE<SET,MAX_SETS,STORE_ALLOCATION>::CACHE(std::string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity)
+CACHE<SET,MAX_SETS,STORE_ALLOCATION>::CACHE()
+	:CACHE_BASE("null",0,0,0)
+{
+	
+}
+template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
+CACHE<SET,MAX_SETS,STORE_ALLOCATION>::CACHE(string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity)
   : CACHE_BASE(name, cacheSize, lineSize, associativity)
 {
 	ASSERTX(NumSets() <= MAX_SETS);
@@ -194,6 +200,23 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS
     return hit;
 }
 
+template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::ReadData(UINT8 * data){
+	
+}
+
+template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(){
+	
+}
+
+template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
+	CACHE_BASE::Description();
+}
+
+template class CACHE_LRU(16*KILO, 64, STORE_ALLOCATE);
+template class CACHE_LRU(64 * KILO, 64, STORE_ALLOCATE);
 /*
 namespace DL1
 {

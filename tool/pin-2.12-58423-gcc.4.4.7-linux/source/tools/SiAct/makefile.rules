@@ -70,6 +70,6 @@ LIB_ROOTS :=
 #
 ##############################################################
 $(OBJDIR)%$(PINTOOL_SUFFIX): $(OBJDIR)%$(OBJ_SUFFIX)
-	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ \
+	$(LINKER) $(TOOL_LDFLAGS) -Wl,--no-undefined $(LINK_EXE)$@ \
 	$(OBJDIR)helper.o $(OBJDIR)strategy.o $(OBJDIR)cache.o $(OBJDIR)memory.o $(OBJDIR)approx.o $(OBJDIR)hierarchy.o \
 	 $< $(TOOL_LPATHS) $(TOOL_LIBS)

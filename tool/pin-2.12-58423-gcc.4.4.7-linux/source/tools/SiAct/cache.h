@@ -106,6 +106,7 @@ class CACHE : public CACHE_BASE
   private:
     SET _sets[MAX_SETS];
   public:
+	CACHE();
     // constructors/destructors
     CACHE(std::string name, 
 		  UINT32 cacheSize, 

@@ -91,20 +91,38 @@ void ROUND_ROBIN<MAX_ASSOCIATIVITY>::Replace(CACHE_TAG tag)
  *  @brief Cache set with LRU replacement
 */
 
+
 template <UINT32 MAX_ASSOCIATIVITY>
-LRU<MAX_ASSOCIATIVITY>::LRU(UINT32 associativity = MAX_ASSOCIATIVITY)
+LRU<MAX_ASSOCIATIVITY>::LRU()
+  : _tagsLastIndex(MAX_ASSOCIATIVITY - 1)
+{
+	UINT32 associativity = MAX_ASSOCIATIVITY;
+	ASSERTX(associativity <= MAX_ASSOCIATIVITY);
+
+	_tags.reserve(associativity);
+	_tagsPriority.reserve(associativity);
+	_currentMaxPriority = 1;
+	for (INT32 index = _tagsLastIndex; index >= 0; index--)
+	{
+		_tags.push_back(CACHE_TAG(0));
+		_tagsPriority.push_back(0);
+	}
+}
+
+template <UINT32 MAX_ASSOCIATIVITY>
+LRU<MAX_ASSOCIATIVITY>::LRU(UINT32 associativity)
   : _tagsLastIndex(associativity - 1)
 {
-ASSERTX(associativity <= MAX_ASSOCIATIVITY);
+	ASSERTX(associativity <= MAX_ASSOCIATIVITY);
 
-_tags.reserve(associativity);
-_tagsPriority.reserve(associativity);
-_currentMaxPriority = 1;
-for (INT32 index = _tagsLastIndex; index >= 0; index--)
-{
-	_tags.push_back(CACHE_TAG(0));
-	_tagsPriority.push_back(0);
-}
+	_tags.reserve(associativity);
+	_tagsPriority.reserve(associativity);
+	_currentMaxPriority = 1;
+	for (INT32 index = _tagsLastIndex; index >= 0; index--)
+	{
+		_tags.push_back(CACHE_TAG(0));
+		_tagsPriority.push_back(0);
+	}
 }
 
 template <UINT32 MAX_ASSOCIATIVITY>
@@ -170,3 +188,4 @@ void LRU<MAX_ASSOCIATIVITY>::Replace(CACHE_TAG tag)
   _tagsPriority[minIndex] = _currentMaxPriority++;
 }
 
+template class LRU<64>;

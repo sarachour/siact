@@ -1,6 +1,6 @@
 #ifndef STRATEGY_H
 #define STRATEGY_H
-
+#include "helper.H"
 #include "pin.H"
 /*!
  *  @brief Cache set direct mapped
@@ -19,8 +19,9 @@ class DIRECT_MAPPED
 
 /*!
  *  @brief Cache set with round robin replacement
+ * default is four
  */
-template <UINT32 MAX_ASSOCIATIVITY = 4>
+template <UINT32 MAX_ASSOCIATIVITY>
 class ROUND_ROBIN
 {
   private:
@@ -39,8 +40,9 @@ class ROUND_ROBIN
 
 /*!
  *  @brief Cache set with LRU replacement
+ * default is four
  */
-template <UINT32 MAX_ASSOCIATIVITY = 4>
+template <UINT32 MAX_ASSOCIATIVITY>
 class LRU
 {
   private:
@@ -49,6 +51,7 @@ class LRU
     UINT32 _tagsLastIndex;
     UINT64 _currentMaxPriority;
   public:
+    LRU();
     LRU(UINT32 associativity); //MAX_ASSOCIATIVITY by default
     void SetAssociativity(UINT32 associativity);
     UINT32 GetAssociativity(UINT32 associativity);

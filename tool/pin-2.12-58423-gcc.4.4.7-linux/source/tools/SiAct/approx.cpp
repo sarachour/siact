@@ -34,12 +34,12 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, 
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ReadData(UINT8 * data){
-	return true;
+
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(){
-	return true;
+
 }
 
 APPROXMEMORY::APPROXMEMORY(ApproximateMemoryModel model){
@@ -51,3 +51,6 @@ void APPROXMEMORY::Report(){
 void APPROXMEMORY::Description(){
 	printf("Approximate Memory\n");
 }
+
+template class APPROX_CACHE_LRU(16*KILO, 64, STORE_ALLOCATE);
+template class APPROX_CACHE_LRU(64 * KILO, 64, STORE_ALLOCATE);
