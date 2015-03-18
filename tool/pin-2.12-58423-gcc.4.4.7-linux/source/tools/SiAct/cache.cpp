@@ -1,37 +1,11 @@
 #include "cache.h"
+#include "pin.H"
 
 #include <sstream>
 #include <algorithm>
 #include <vector>
 #include <map>
 #include <assert.h>
-
-/*!
- *  @brief Cache tag - self clearing on creation
- */
-
-//CACHE_TAG(ADDRINT tag = 0) { _tag = tag; }
-CACHE_TAG::CACHE_TAG(ADDRINT tag = 0, string cacheLineOwner = "DEFAULT") { 
-	_tag = tag; 
-	_cacheLineOwner = cacheLineOwner; 
-}
-bool CACHE_TAG::operator==(const CACHE_TAG &right) const { 
-	return _tag == right._tag; 
-}
-operator CACHE_TAG::ADDRINT() const { 
-	return _tag; 
-}
-void CACHE_TAG::setCacheLineOwner(string cacheLineOwner){ 
-	_cacheLineOwner = cacheLineOwner;
-}
-string CACHE_TAG::updateCacheLineOwner(string cacheLineOwner){ 
-	string prevCacheOwner = _cacheLineOwner; 
-	_cacheLineOwner = cacheLineOwner; 
-	return(prevCacheOwner);
-}
-string CACHE_TAG::getCacheLineOwner(){ 
-	return(_cacheLineOwner);
-}
 
 
 CACHE_STATS CACHE_BASE::SumAccess(bool hit) const
@@ -69,7 +43,7 @@ UINT32 CACHE_BASE::NumSets() const { return _setIndexMask + 1; }
 VOID CACHE_BASE::SplitAddress(const ADDRINT addr, CACHE_TAG & tag, UINT32 & setIndex) const
 {
 	tag = addr >> _lineShift;
-	setIndex = tag & _setIndexMask;
+	setIndex = tag.addr() & _setIndexMask;
 }
 
 VOID CACHE_BASE::SplitAddress(const ADDRINT addr, CACHE_TAG & tag, UINT32 & setIndex, UINT32 & lineIndex) const
@@ -80,17 +54,7 @@ VOID CACHE_BASE::SplitAddress(const ADDRINT addr, CACHE_TAG & tag, UINT32 & setI
 }
 
 
-// constructors/destructors
-CACHE::CACHE(std::string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity)
-  : CACHE_BASE(name, cacheSize, lineSize, associativity)
-{
-	ASSERTX(NumSets() <= MAX_SETS);
 
-	for (UINT32 i = 0; i < NumSets(); i++)
-	{
-		_sets[i].SetAssociativity(associativity);
-	}
-}
 /*!
  *  @brief Stats output method
  */
@@ -112,15 +76,15 @@ string CACHE_BASE::StatsLong(string prefix, CACHE_TYPE cache_type) const
            std::string type(accessType == ACCESS_TYPE_LOAD ? "Load" : "Store");
 
            out += prefix + ljstr(type + "-Hits:      ", headerWidth)
-                  + mydecstr(Hits(accessType), numberWidth)  +
+                  + local_decstr(Hits(accessType), numberWidth)  +
                   "  " +fltstr(100.0 * Hits(accessType) / Accesses(accessType), 2, 6) + "%\n";
 
            out += prefix + ljstr(type + "-Misses:    ", headerWidth)
-                  + mydecstr(Misses(accessType), numberWidth) +
+                  + local_decstr(Misses(accessType), numberWidth) +
                   "  " +fltstr(100.0 * Misses(accessType) / Accesses(accessType), 2, 6) + "%\n";
         
            out += prefix + ljstr(type + "-Accesses:  ", headerWidth)
-                  + mydecstr(Accesses(accessType), numberWidth) +
+                  + local_decstr(Accesses(accessType), numberWidth) +
                   "  " +fltstr(100.0 * Accesses(accessType) / Accesses(accessType), 2, 6) + "%\n";
         
            out += prefix + "\n";
@@ -128,15 +92,15 @@ string CACHE_BASE::StatsLong(string prefix, CACHE_TYPE cache_type) const
     }
 
     out += prefix + ljstr("Total-Hits:      ", headerWidth)
-           + mydecstr(Hits(), numberWidth) +
+           + local_decstr(Hits(), numberWidth) +
            "  " +fltstr(100.0 * Hits() / Accesses(), 2, 6) + "%\n";
 
     out += prefix + ljstr("Total-Misses:    ", headerWidth)
-           + mydecstr(Misses(), numberWidth) +
+           + local_decstr(Misses(), numberWidth) +
            "  " +fltstr(100.0 * Misses() / Accesses(), 2, 6) + "%\n";
 
     out += prefix + ljstr("Total-Accesses:  ", headerWidth)
-           + mydecstr(Accesses(), numberWidth) +
+           + local_decstr(Accesses(), numberWidth) +
            "  " +fltstr(100.0 * Accesses() / Accesses(), 2, 6) + "%\n";
     out += "\n";
 
@@ -144,12 +108,25 @@ string CACHE_BASE::StatsLong(string prefix, CACHE_TYPE cache_type) const
 }
 
 
+// constructors/destructors
+
+template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
+CACHE<SET,MAX_SETS,STORE_ALLOCATION>::CACHE(std::string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity)
+  : CACHE_BASE(name, cacheSize, lineSize, associativity)
+{
+	ASSERTX(NumSets() <= MAX_SETS);
+
+	for (UINT32 i = 0; i < NumSets(); i++)
+	{
+		_sets[i].SetAssociativity(associativity);
+	}
+}
 /*!
  *  @return true if all accessed cache lines hit
  */
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, UINT64* memAccessCount, UINT64* memMissCount)
+bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType)
 {
     const ADDRINT highAddr = addr + size;
     bool allHit = true;
@@ -168,13 +145,11 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACC
         bool localHit = set.Find(tag);
         allHit &= localHit;
 
-        (*memAccessCount)++; //access count of the function
 
         // on miss, loads always allocate, stores optionally
-        if ( (! localHit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == CACHE_ALLOC::STORE_ALLOCATE))
+        if ( (! localHit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
         {
             set.Replace(tag);
-            (*memMissCount)++; //miss count of the function
         }
 
         addr = (addr & notLineMask) + lineSize; // start of next cache line
@@ -190,7 +165,7 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACC
  *  @return true if accessed cache line hits
  */
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, UINT64* memAccessCount, UINT64* memMissCount)
+bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType)
 {
     CACHE_TAG tag;
     UINT32 setIndex;
@@ -201,13 +176,11 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS
 
     bool hit = set.Find(tag);
 
-    (*memAccessCount)++; //access count of the function
 
     // on miss, loads always allocate, stores optionally
-    if ( (! hit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == CACHE_ALLOC::STORE_ALLOCATE))
+    if ( (! hit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
     {
         set.Replace(tag);
-        (*memMissCount)++; //miss count of the function
     }
 
     _access[accessType][hit]++; //hit/miss count of the cache
@@ -402,3 +375,4 @@ VOID simulate_cacheHierarchy(INS ins, UINT64* functionL1AccessCount, UINT64* fun
     }  //for
 
 }
+* */

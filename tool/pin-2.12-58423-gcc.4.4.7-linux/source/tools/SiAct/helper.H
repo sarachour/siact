@@ -1,6 +1,7 @@
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef HELPER_H
+#define HELPER_H
 
+#include "pin.H"
 
 #define KILO 1024
 #define MEGA (KILO*KILO)
@@ -20,18 +21,18 @@ class CACHE_TAG
   public:
     //CACHE_TAG(ADDRINT tag = 0) { _tag = tag; }
     CACHE_TAG(ADDRINT tag = 0, string cacheLineOwner = "DEFAULT");
-    bool operator==(const CACHE_TAG &right);
-    operator ADDRINT() const;
-    void setCacheLineOwner(string cacheLineOwner);
-    string updateCacheLineOwner(string cacheLineOwner);
-    string getCacheLineOwner();
+    bool operator==(const CACHE_TAG &right) const;
+    ADDRINT addr() const;
+    void setCacheLineOwner(std::string cacheLineOwner);
+    std::string updateCacheLineOwner(std::string cacheLineOwner);
+    std::string getCacheLineOwner();
 };
 
 /*! RMR (rodric@gmail.com) 
  *   - temporary work around because decstr()
  *     casts 64 bit ints to 32 bit ones
  */
-string local_decstr(UINT64 v, UINT32 w);
+std::string local_decstr(UINT64 v, UINT32 w);
 
 /*!
  *  @brief Checks if n is a power of 2.
@@ -71,6 +72,10 @@ static inline INT32 CeilLog2(UINT32 n)
 {
     return FloorLog2(n - 1) + 1;
 }
+
+uint32_t create_mask(int n);
+
+#define RGEN_MAX UINT_MAX
 
 
 #endif

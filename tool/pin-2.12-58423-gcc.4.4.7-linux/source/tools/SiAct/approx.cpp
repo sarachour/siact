@@ -1,7 +1,7 @@
-#include "approx.h"
+#include "approx.H"
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, UINT64* memAccessCount, UINT64* memMissCount)
+bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType)
 {
     const ADDRINT highAddr = addr + size;
     bool allHit = true;
@@ -20,13 +20,11 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 siz
         bool localHit = set.Find(tag);
         allHit &= localHit;
 
-        (*memAccessCount)++; //access count of the function
 
         // on miss, loads always allocate, stores optionally
-        if ( (! localHit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == CACHE_ALLOC::STORE_ALLOCATE))
+        if ( (! localHit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
         {
             set.Replace(tag);
-            (*memMissCount)++; //miss count of the function
         }
 
         addr = (addr & notLineMask) + lineSize; // start of next cache line
@@ -43,7 +41,7 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 siz
  *  @return true if accessed cache line hits
  */
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, UINT64* memAccessCount, UINT64* memMissCount)
+bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType)
 {
     CACHE_TAG tag;
     UINT32 setIndex;
@@ -54,13 +52,10 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, 
 
     bool hit = set.Find(tag);
 
-    (*memAccessCount)++; //access count of the function
-
     // on miss, loads always allocate, stores optionally
-    if ( (! hit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == CACHE_ALLOC::STORE_ALLOCATE))
+    if ( (! hit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
     {
         set.Replace(tag);
-        (*memMissCount)++; //miss count of the function
     }
 
     _access[accessType][hit]++; //hit/miss count of the cache

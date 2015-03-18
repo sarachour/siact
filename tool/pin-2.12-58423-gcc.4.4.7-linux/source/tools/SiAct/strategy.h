@@ -1,7 +1,7 @@
 #ifndef STRATEGY_H
 #define STRATEGY_H
 
-
+#include "pin.H"
 /*!
  *  @brief Cache set direct mapped
  */
@@ -11,10 +11,10 @@ class DIRECT_MAPPED
     CACHE_TAG _tag;
   public:
     DIRECT_MAPPED(UINT32 associativity = 1);
-    VOID SetAssociativity(UINT32 associativity);
+    void SetAssociativity(UINT32 associativity);
     UINT32 GetAssociativity(UINT32 associativity);
     UINT32 Find(CACHE_TAG tag);
-    VOID Replace(CACHE_TAG tag);
+    void Replace(CACHE_TAG tag);
 };
 
 /*!
@@ -30,11 +30,11 @@ class ROUND_ROBIN
 
   public:
     ROUND_ROBIN(UINT32 associativity = MAX_ASSOCIATIVITY);
-    VOID SetAssociativity(UINT32 associativity);
+    void SetAssociativity(UINT32 associativity);
     UINT32 GetAssociativity(UINT32 associativity);
     UINT32 Find(CACHE_TAG tag);
-	string UpdateOwner(CACHE_TAG tag, string newCacheLineOwner);
-    VOID Replace(CACHE_TAG tag);
+	std::string UpdateOwner(CACHE_TAG tag, string newCacheLineOwner);
+    void Replace(CACHE_TAG tag);
 };
 
 /*!
@@ -48,14 +48,13 @@ class LRU
     vector<UINT64> _tagsPriority;
     UINT32 _tagsLastIndex;
     UINT64 _currentMaxPriority;
-
   public:
-    LRU(UINT32 associativity = MAX_ASSOCIATIVITY);
-    VOID SetAssociativity(UINT32 associativity);
+    LRU(UINT32 associativity); //MAX_ASSOCIATIVITY by default
+    void SetAssociativity(UINT32 associativity);
     UINT32 GetAssociativity(UINT32 associativity);
     UINT32 Find(CACHE_TAG tag);
-    string UpdateOwner(CACHE_TAG tag, string newCacheLineOwner);
-    VOID Replace(CACHE_TAG tag);
+    std::string UpdateOwner(CACHE_TAG tag, string newCacheLineOwner);
+    void Replace(CACHE_TAG tag);
 
 };
 

@@ -1,10 +1,15 @@
 CC=g++
 INCLUDE="-I../include"
+DEPS="../include/pin_util.o"
 
-all:  test.app1 test.app2 test.app3
+all: deps test.app1 test.app2 test.app3
 
-test.%: %.o 
-	$(CC) $(INCLUDE) -o $@ $<
+deps:
+	cd ../include; make
+	cd ..; make
+	
+test.%: %.o
+	$(CC) $(INCLUDE) -o $@ $(DEPS) $<
 	
 %.o: %.cpp
 	$(CC) $(COPTS) $(INCLUDE) -o $@ -c $< 

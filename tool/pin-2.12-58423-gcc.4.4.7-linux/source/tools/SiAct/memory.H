@@ -1,6 +1,8 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
+#include "pin.H"
+
 class MEMORY_ADDR_RANGES {
 	typedef struct {
 		UINT64 start;
@@ -8,9 +10,9 @@ class MEMORY_ADDR_RANGES {
 	} addr_range_t;
 	std::vector<addr_range_t> addrs;
 	public:
-		VOID def(UINT64 start, UINT64 length); // define a range
-		VOID undef(UINT64 start); // undefine a range
-		VOID contains(UINT64 addr);
+		void def(UINT64 start, UINT64 length); // define a range
+		void undef(UINT64 start); // undefine a range
+		void contains(UINT64 addr);
 };
 
 class MEMORY_BASE {
@@ -24,7 +26,7 @@ class MEMORY_BASE {
 class MEMORY : public MEMORY_BASE {
 	
 };
-
-
-
+extern "C" {
+	VOID mem_urel_alloc(UINT64 address, UINT64 length);
+}
 #endif

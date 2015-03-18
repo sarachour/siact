@@ -7,9 +7,12 @@
 #include "fault_const.H"
 #include "xorshift.h"
 #include <map>
+#include "cache.H"
+#include "approx.H"
+
+#include "hierarchy.H"
+
 #define USE_HARDWARE_FAULT_MODEL
-
-
 /*
  * 
  * DRAM refresh: per second bit flip probability:
@@ -40,145 +43,22 @@ Arithmetic timing error probability:
 Energy Saved Per operation
 12      22      30
 
-
-
-
  */
 
 
-typedef struct HW_MODEL_INFO_T{
-	float sram_read_err_int;
-	float sram_write_err_int;
-	float sram_read_err_fp;
-	float sram_write_err_fp;
-	uint32_t dbl_err_nbits;
-	uint32_t flt_err_nbits;
-	float dram_per_sec_bitflip_int;
-	float dram_per_sec_bitflip_fp;
-	uint32_t SRAM_READ_ERR_INT;
-	uint32_t SRAM_WRITE_ERR_INT;
-	uint32_t SRAM_READ_ERR_FP;
-	uint32_t SRAM_WRITE_ERR_FP;
-	uint32_t DRAM_PER_SEC_BITFLIP_INT;
-	uint32_t DRAM_PER_SEC_BITFLIP_FP;
-	uint8_t DRAM_ENABLE;
-	uint32_t dbl_err_mask;
-	uint32_t flt_err_mask;
-	//index
+typedef struct HW_MODEL_INFO_T {
 	int idx;
 	uint32_t srand;
+	CacheHierarchy * mem;
 } hw_info_t;
 
-
-std::map<std::string, hw_info_t> hw_models;
-
-uint32_t create_mask(int n){
-	uint32_t mask = 0;
-	for(int i=0; i < n ; i++){
-		mask = (0x1<<i) | mask;
-	}
-	return mask;
-}
-#define RGEN_MAX UINT_MAX
-hw_info_t create_spec(float sram_rd_int, float sram_wr_int, float sram_rd_fp, float sram_wr_fp, 
-					float dram_bf_int, float dram_bf_fp,
-					int dbl_err_nbits, int flt_err_nbits){
-	hw_info_t t;
-	t.sram_read_err_fp = sram_rd_fp;
-	t.sram_read_err_int = sram_rd_int;
-	t.sram_write_err_fp = sram_wr_fp;
-	t.sram_write_err_int = sram_wr_int;
-	t.dram_per_sec_bitflip_fp = dram_bf_fp;
-	t.dram_per_sec_bitflip_int = dram_bf_int;
-	t.dbl_err_nbits = dbl_err_nbits;
-	t.flt_err_nbits = flt_err_nbits;
-	t.dbl_err_mask = create_mask(t.dbl_err_nbits);
-	t.flt_err_mask = create_mask(t.flt_err_nbits);
-	t.SRAM_READ_ERR_FP = t.sram_read_err_fp*RGEN_MAX;
-	t.SRAM_WRITE_ERR_FP = t.sram_write_err_fp*RGEN_MAX;
-	t.SRAM_READ_ERR_INT = t.sram_read_err_int*RGEN_MAX;
-	t.SRAM_WRITE_ERR_INT =  t.sram_write_err_int*RGEN_MAX;
-	t.DRAM_PER_SEC_BITFLIP_FP = t.dram_per_sec_bitflip_fp*RGEN_MAX;
-	t.DRAM_PER_SEC_BITFLIP_INT = t.dram_per_sec_bitflip_int*RGEN_MAX;
-	if(t.DRAM_PER_SEC_BITFLIP_FP > 0 || t.DRAM_PER_SEC_BITFLIP_INT > 0)
-		t.DRAM_ENABLE = 1;
-	else
-		t.DRAM_ENABLE = 0;
-	return t;
-}
-void _createHWMap(int use_integer_approx, int use_reduced_mantissa, int use_drams){
-	//dbl = 52 bits
-	//flt = 23 bits
-	char name[128];
-	int u_ia = use_integer_approx; //use integer approximation
-	int u_rm = use_reduced_mantissa; //use reduced mantissa
-	int u_d = use_drams;
-	hw_info_t aggressive = create_spec(
-		pow(10,-3)*u_ia, pow(10,-3)*u_ia, pow(10,-3), pow(10,-3), //sram
-		pow(10,-3)*u_ia*u_d, pow(10,-3)*u_d, //dram_refresh
-		(52-8)*u_rm, (23-4)*u_rm
-	);
-	hw_info_t heavy = create_spec(
-		pow(10,-5)*u_ia, pow(10,-4)*u_ia,pow(10,-5), pow(10,-4), //sram
-		pow(10,-4)*u_ia*u_d, pow(10,-4)*u_d, //dram_refresh
-		(52-12)*u_rm, (23-6)*u_rm
-	);
-	hw_info_t heavymed = create_spec(
-		pow(10,-6.2)*u_ia, pow(10,-4.5)*u_ia,pow(10,-6.2), pow(10,-4.5), //sram
-		pow(10,-4.5)*u_ia*u_d, pow(10,-4.5)*u_d, //dram_refresh
-		(52-14)*u_rm, (23-7)*u_rm
-	);
-	hw_info_t none = create_spec(
-		0,0,0,0, //sram
-		pow(10,-4.5)*u_ia*u_d, pow(10,-4.5)*u_d, //dram_refresh
-		0,0
-	);
-	hw_info_t medium = create_spec(
-		pow(10,-7.4)*u_ia, pow(10,-4.94)*u_ia, pow(10,-7.4), pow(10,-4.94), //sram
-		pow(10,-5)*u_ia*u_d, pow(10,-5)*u_d, //dram_refresh
-		(52-16)*u_rm, (23-8)*u_rm
-	);
-	hw_info_t mild = create_spec(
-		pow(10,-16.7)*u_ia, pow(10,-5.59)*u_ia, pow(10,-16.7), pow(10,-5.59), //sram
-		pow(10,-9)*u_ia*u_d, pow(10,-9)*u_d, //dram_refresh
-		(52-32)*u_rm, (23-16)*u_rm
-	);
-	sprintf(name,"%s%s%s%s", "heavy", u_ia == 1 ? ".int":"", u_d == 1 ? ".dram" : "", u_rm == 1? ".mant" : "");
-	hw_models[name] = heavy;
-	sprintf(name,"%s%s%s%s", "heavymed", u_ia == 1 ? ".int":"", u_d == 1 ? ".dram" : "", u_rm == 1? ".mant" : "");
-	hw_models[name] = heavymed;
-	sprintf(name,"%s%s%s%s", "aggressive", u_ia == 1 ? ".int":"", u_d == 1 ? ".dram" : "", u_rm == 1? ".mant" : "");
-	hw_models[name] = aggressive;
-	sprintf(name,"%s%s%s%s", "medium", u_ia == 1 ? ".int":"", u_d == 1 ? ".dram" : "", u_rm == 1? ".mant" : "");
-	hw_models[name] = medium;
-	sprintf(name,"%s%s%s%s", "mild", u_ia == 1 ? ".int":"", u_d == 1 ? ".dram" : "", u_rm == 1? ".mant" : "");
-	hw_models[name] = mild;
-	sprintf(name,"%s%s%s%s", "none", u_ia == 1 ? ".int":"", u_d == 1 ? ".dram" : "", u_rm == 1? ".mant" : "");
-	hw_models[name] = none;
-}
-void createHWMap(){
-	hw_info_t perfect = create_spec(
-		0,0,0,0, //sram
-		0,0,
-		0,0
-	);
-	_createHWMap(0,0,0);
-	_createHWMap(1,0,0);
-	_createHWMap(0,1,0);
-	_createHWMap(0,0,1);
-	_createHWMap(0,1,1);
-	_createHWMap(1,1,0);
-	_createHWMap(1,0,1);
-	_createHWMap(1,1,1);
-	hw_models["perfect"] = perfect;
-}
 
 std::vector<hw_info_t> hw_model_list;
 
 
 hw_info_t model;
 bool loaded = false;
-
+extern CacheHierarchy * memory;
 KNOB<string> KnobHardwareSpecFile(KNOB_MODE_WRITEONCE, "pintool",
   "hwmodel", "hardwareModel.txt", "specify mappings to a hardware model");
 
@@ -188,24 +68,16 @@ KNOB<INT> KnobGlobalSeed (KNOB_MODE_WRITEONCE, "pintool", "s", "0", "Set global 
 void print_hardware_fault_model(FILE * out){
   fprintf(out, "Hardware Fault Model Info\n");
   fprintf(out, "idx: %d, seed: %d\n", model.idx, model.srand);
-  fprintf(out, "sram	read	write\n");
-  fprintf(out, "fp	%e	%e\n", model.sram_read_err_fp, model.sram_write_err_fp);
-  fprintf(out, "int	%e	%e\n\n", model.sram_read_err_int, model.sram_write_err_int);
-  fprintf(out, "dram	perr/sec\n");
-  fprintf(out, "fp	%e\n", model.dram_per_sec_bitflip_fp);
-  fprintf(out, "int	%e\n\n", model.dram_per_sec_bitflip_int);
-  fprintf(out, "mant-type	n-nonsig-bits	mask\n");
-  fprintf(out, "fp-mant:	%d %x\n", model.flt_err_nbits, model.flt_err_mask);
-  fprintf(out, "dbl-mant:	%d %x\n", model.dbl_err_nbits, model.dbl_err_mask);
+  model.mem->description();
 
 }
 
-VOID __setHardwareFaultModel(){
+VOID setRGENSeed(){
   sxorshift32(model.srand);
 
 }
 
-VOID loadHardwareFaultModel(ADDRINT model_ptr){
+VOID load_hardware_fault_model(ADDRINT model_ptr){
   unsigned int i;
   int model_index = model_ptr;
   loaded = true;
@@ -214,7 +86,8 @@ VOID loadHardwareFaultModel(ADDRINT model_ptr){
     if(hinfo.idx == model_index){
       printf("[HARDWARE] LOADING FAULT MODEL %d\n", i);
       model = hinfo;
-      __setHardwareFaultModel();
+      setRGENSeed();
+      memory = model.mem;
       print_hardware_fault_model(stdout);
     }
   }
@@ -223,8 +96,6 @@ VOID loadHardwareFaultModel(ADDRINT model_ptr){
 
 void readHardwareFaultModelFile(){
   std::ifstream myReadFile;
-  cout << "[HARDWARE] LOADING MODEL DESCRIPTIONS\n"<<endl;
-  createHWMap();
   cout << "[HARDWARE] LOADING FAULT MODEL FROM FILE: "  << KnobHardwareSpecFile.Value().c_str() << endl;
   myReadFile.open(KnobHardwareSpecFile.Value().c_str());
   if(myReadFile){
@@ -238,14 +109,60 @@ void readHardwareFaultModelFile(){
             }
             else //if "#" is not found in the string
             {
-              char name[128];
+              char sramtype[128];
+              char dramtype[128];
+              char overalltype[128];
+              UINT32 l1i_cache, l1i_line, l1i_assoc; //cache is in kb
+              UINT32 l1d_cache, l1d_line, l1d_assoc;
+              UINT32 l2_cache, l2_line, l2_assoc;
+              ApproximateCacheModel l1dmodel;
+              ApproximateCacheModel l2model;
+              ApproximateMemoryModel memmodel;
               int idx;
               uint32_t seed;
+              hw_info_t templ;
               //1 bit-flip-prob=0.1 err-bits=9
-              sscanf(output.c_str(), "%d	name=%s	seed=%d", &idx, name, &seed);
-              hw_info_t templ = hw_models[name];
+              sscanf(output.c_str(), "%d seed=%d type=%s,%s,%s l1i=%d,%d,%d l1d=%d,%d,%d l2=%d,%d,%d", 
+				&idx, &seed,
+				overalltype, sramtype, dramtype, 
+				&l1i_cache, &l1i_line,&l1i_assoc,
+				&l1d_cache, &l1d_line, &l1d_assoc,
+				&l2_cache, &l2_line, &l2_assoc);
+              
               templ.srand = KnobGlobalSeed.Value() + seed;
               templ.idx = idx;
+              if(strcmp(sramtype, "med")){
+				  l1dmodel = l2model = CacheModelMedium;
+			  }
+			  else if(strcmp(sramtype, "heavy")){
+				  l1dmodel = l2model = CacheModelHeavy;
+			  }
+			  else{
+				  l1dmodel = l2model = CacheModelNone;
+			  }
+			  if(strcmp(dramtype, "static")){
+				  memmodel = MemoryModelStatic;
+			  }
+			  else if(strcmp(sramtype, "dynamic")){
+				  memmodel = MemoryModelDynamic;
+			  }
+			  else {
+				  memmodel = MemoryModelNone;
+			  }
+              if(strcmp(overalltype, "precise")){
+				  templ.mem = new PreciseHierarchy(
+					l1i_cache, l1i_line, l1i_assoc,
+					l1d_cache, l1d_line, l1d_assoc,
+					l2_cache, l2_line, l2_assoc);
+			  }
+			  else if(strcmp(overalltype, "approximate")){
+				   templ.mem = new ApproximateHierarchy(
+					l1i_cache, l1i_line, l1i_assoc,
+					l1d_cache, l1d_line, l1d_assoc,
+					l2_cache, l2_line, l2_assoc,
+					l1dmodel, l2model, memmodel
+					);
+			  }
               hw_model_list.push_back(templ);
 
             }

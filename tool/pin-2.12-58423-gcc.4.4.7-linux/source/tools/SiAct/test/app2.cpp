@@ -17,7 +17,7 @@ void app2(){
 }
 
 int main(){
-	long int tims[3];
+	double tims[3];
 	PIN_BIND_MODEL(1);
 	PIN_START_TIMER(0);
 	PIN_START_TIMER(1);
@@ -27,9 +27,9 @@ int main(){
 	app2();
 	PIN_STOP_TIMER(2,&tims[2]);
 	PIN_STOP_TIMER(0,&tims[0]);
-	printf("Timer 0:%ld\n", tims[0]);
-	printf("Timer 1:%ld\n", tims[1]);
-	printf("Timer 2:%ld\n", tims[2]);
+	printf("Timer 0:%f\n", tims[0]);
+	printf("Timer 1:%f\n", tims[1]);
+	printf("Timer 2:%f\n", tims[2]);
 	PIN_START_TIMER(0);
 	PIN_START_TIMER(1);
 	app1();
@@ -38,7 +38,7 @@ int main(){
 	app2();
 	PIN_STOP_TIMER(2,&tims[2]);
 	PIN_STOP_TIMER(0,&tims[0]);
-	printf("Timer 0:%ld\n", tims[0]);
-	printf("Timer 1:%ld\n", tims[1]);
-	printf("Timer 2:%ld\n", tims[2]);
+	printf("Timer 0:%f\n", tims[0]);
+	printf("Timer 1:%f\n", tims[1]);
+	printf("Timer 2:%f\n", tims[2]);
 }

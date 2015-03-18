@@ -1,13 +1,14 @@
-
+#include "helper.h"
+#include "strategy.h"
 /*!
  *  @brief Cache set direct mapped
  */
 
-DIRECT_MAPPED::DIRECT_MAPPED(UINT32 associativity = 1) { 
+DIRECT_MAPPED::DIRECT_MAPPED(UINT32 associativity) { 
 	ASSERTX(associativity == 1); 
 }
 
-VOID DIRECT_MAPPED::SetAssociativity(UINT32 associativity) { 
+void DIRECT_MAPPED::SetAssociativity(UINT32 associativity) { 
 	ASSERTX(associativity == 1); 
 }
 UINT32 DIRECT_MAPPED::GetAssociativity(UINT32 associativity) { 
@@ -17,13 +18,14 @@ UINT32 DIRECT_MAPPED::GetAssociativity(UINT32 associativity) {
 UINT32 DIRECT_MAPPED::Find(CACHE_TAG tag) { 
 	return(_tag == tag);
 }
-VOID DIRECT_MAPPED::Replace(CACHE_TAG tag) { 
+void DIRECT_MAPPED::Replace(CACHE_TAG tag) { 
 	_tag = tag; 
 }
 
 
 
-ROUND_ROBIN::ROUND_ROBIN(UINT32 associativity = MAX_ASSOCIATIVITY)
+template <UINT32 MAX_ASSOCIATIVITY>
+ROUND_ROBIN<MAX_ASSOCIATIVITY>::ROUND_ROBIN(UINT32 associativity)
   : _tagsLastIndex(associativity - 1)
 {
 	ASSERTX(associativity <= MAX_ASSOCIATIVITY);
@@ -35,15 +37,18 @@ ROUND_ROBIN::ROUND_ROBIN(UINT32 associativity = MAX_ASSOCIATIVITY)
 	}
 }
 
-VOID ROUND_ROBIN::SetAssociativity(UINT32 associativity)
+template <UINT32 MAX_ASSOCIATIVITY>
+void ROUND_ROBIN<MAX_ASSOCIATIVITY>::SetAssociativity(UINT32 associativity)
 {
 	ASSERTX(associativity <= MAX_ASSOCIATIVITY);
 	_tagsLastIndex = associativity - 1;
 	_nextReplaceIndex = _tagsLastIndex;
 }
-UINT32 ROUND_ROBIN::GetAssociativity(UINT32 associativity) { return _tagsLastIndex + 1; }
+template <UINT32 MAX_ASSOCIATIVITY>
+UINT32 ROUND_ROBIN<MAX_ASSOCIATIVITY>::GetAssociativity(UINT32 associativity) { return _tagsLastIndex + 1; }
 
-UINT32 ROUND_ROBIN::Find(CACHE_TAG tag)
+template <UINT32 MAX_ASSOCIATIVITY>
+UINT32 ROUND_ROBIN<MAX_ASSOCIATIVITY>::Find(CACHE_TAG tag)
 {
 	bool result = true;
 
@@ -58,7 +63,8 @@ UINT32 ROUND_ROBIN::Find(CACHE_TAG tag)
 	end: return result;
 }
 
-string ROUND_ROBIN::UpdateOwner(CACHE_TAG tag, string newCacheLineOwner)
+template <UINT32 MAX_ASSOCIATIVITY>
+string ROUND_ROBIN<MAX_ASSOCIATIVITY>::UpdateOwner(CACHE_TAG tag, string newCacheLineOwner)
 {
 	for(INT32 index = _tagsLastIndex; index >= 0; index--)
 	{
@@ -70,7 +76,8 @@ string ROUND_ROBIN::UpdateOwner(CACHE_TAG tag, string newCacheLineOwner)
 	return("");
 }
 
-VOID ROUND_ROBIN::Replace(CACHE_TAG tag)
+template <UINT32 MAX_ASSOCIATIVITY>
+void ROUND_ROBIN<MAX_ASSOCIATIVITY>::Replace(CACHE_TAG tag)
 {
 	// g++ -O3 too dumb to do CSE on following lines?!
 	const UINT32 index = _nextReplaceIndex;
@@ -84,7 +91,8 @@ VOID ROUND_ROBIN::Replace(CACHE_TAG tag)
  *  @brief Cache set with LRU replacement
 */
 
-LRU::LRU(UINT32 associativity = MAX_ASSOCIATIVITY)
+template <UINT32 MAX_ASSOCIATIVITY>
+LRU<MAX_ASSOCIATIVITY>::LRU(UINT32 associativity = MAX_ASSOCIATIVITY)
   : _tagsLastIndex(associativity - 1)
 {
 ASSERTX(associativity <= MAX_ASSOCIATIVITY);
@@ -99,15 +107,20 @@ for (INT32 index = _tagsLastIndex; index >= 0; index--)
 }
 }
 
-VOID LRU::SetAssociativity(UINT32 associativity)
+template <UINT32 MAX_ASSOCIATIVITY>
+void LRU<MAX_ASSOCIATIVITY>::SetAssociativity(UINT32 associativity)
 {
   ASSERTX(associativity <= MAX_ASSOCIATIVITY);
   _tagsLastIndex = associativity - 1;
 }
 
-UINT32 LRU::GetAssociativity(UINT32 associativity) { return(_tagsLastIndex + 1); }
+template <UINT32 MAX_ASSOCIATIVITY>
+UINT32 LRU<MAX_ASSOCIATIVITY>::GetAssociativity(UINT32 associativity) {
+	 return (_tagsLastIndex + 1); 
+}
 
-UINT32 LRU::Find(CACHE_TAG tag)
+template <UINT32 MAX_ASSOCIATIVITY>
+UINT32 LRU<MAX_ASSOCIATIVITY>::Find(CACHE_TAG tag)
 {
   bool result = true;
 
@@ -127,7 +140,8 @@ UINT32 LRU::Find(CACHE_TAG tag)
   end: return result;
 }
 
-string LRU::UpdateOwner(CACHE_TAG tag, string newCacheLineOwner)
+template <UINT32 MAX_ASSOCIATIVITY>
+string LRU<MAX_ASSOCIATIVITY>::UpdateOwner(CACHE_TAG tag, string newCacheLineOwner)
 {
   for(UINT32 index = 0; index <= _tagsLastIndex; ++index)
   {
@@ -139,7 +153,8 @@ string LRU::UpdateOwner(CACHE_TAG tag, string newCacheLineOwner)
   return("");
 }
 
-VOID LRU::Replace(CACHE_TAG tag)
+template <UINT32 MAX_ASSOCIATIVITY>
+void LRU<MAX_ASSOCIATIVITY>::Replace(CACHE_TAG tag)
 {
   UINT64 minPriority = _tagsPriority[0];
   UINT32 minIndex = 0;
