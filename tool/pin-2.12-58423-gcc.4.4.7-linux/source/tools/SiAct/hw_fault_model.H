@@ -153,16 +153,16 @@ void readHardwareFaultModelFile(){
 			  }
               if(streq(overalltype, "precise")){
 				  templ.mem = new Tuple<PreciseHierarchy,ApproximateHierarchy>(new PreciseHierarchy(
-					l1i_cache, l1i_line, l1i_assoc,
-					l1d_cache, l1d_line, l1d_assoc,
-					l2_cache, l2_line, l2_assoc));
+					l1i_cache*KILO, l1i_line, l1i_assoc,
+					l1d_cache*KILO, l1d_line, l1d_assoc,
+					l2_cache*KILO, l2_line, l2_assoc));
 			  }
 			  else if(streq(overalltype, "approximate")){
 				   templ.mem = new Tuple<PreciseHierarchy,ApproximateHierarchy>(
 						new ApproximateHierarchy(
-						l1i_cache, l1i_line, l1i_assoc,
-						l1d_cache, l1d_line, l1d_assoc,
-						l2_cache, l2_line, l2_assoc,
+						l1i_cache*KILO, l1i_line, l1i_assoc,
+						l1d_cache*KILO, l1d_line, l1d_assoc,
+						l2_cache*KILO, l2_line, l2_assoc,
 						l1dmodel, l2model, memmodel));
 			  }
               hw_model_list.push_back(templ);
