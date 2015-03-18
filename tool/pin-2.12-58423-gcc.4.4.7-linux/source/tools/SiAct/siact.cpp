@@ -99,7 +99,6 @@ INT32 Usage()
     return -1;
 }
 
-CacheHierarchy * memory;
 
 bool INJECT = false;
 

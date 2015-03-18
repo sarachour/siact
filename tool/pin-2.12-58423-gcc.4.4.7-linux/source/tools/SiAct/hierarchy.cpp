@@ -1,22 +1,24 @@
 #include "hierarchy.H"
 #include "pin.H"
+
+Tuple<PreciseHierarchy,ApproximateHierarchy>* memory;
+ 
+
 PreciseHierarchy::PreciseHierarchy(UINT32 l1i_cachesize, UINT32 l1i_linesize, UINT32 l1i_assoc,
 	UINT32 l1d_cachesize, UINT32 l1d_linesize, UINT32 l1d_assoc,
 	UINT32 l2_cachesize, UINT32 l2_linesize, UINT32 l2_assoc){
 		
 }
-void PreciseHierarchy::load(UINT64 addr, UINT8 data){
+void PreciseHierarchy::load(ADDRINT * data, UINT32 size){
 	
 }
-void PreciseHierarchy::store(UINT64 addr, UINT8 data){
+void PreciseHierarchy::store(ADDRINT * data, UINT32 size){
 	
 }
 void PreciseHierarchy::report(){
 	
 }
-void PreciseHierarchy::elapsed(UINT64 msec){
-	
-}
+
 void PreciseHierarchy::description(){
 	
 	
@@ -28,10 +30,13 @@ ApproximateHierarchy::ApproximateHierarchy(UINT32 l1i_cachesize, UINT32 l1i_line
 	ApproximateCacheModel L1m, ApproximateCacheModel L2m, ApproximateMemoryModel Mm){
 		
 }
-void ApproximateHierarchy::load(UINT64 addr, UINT8 data){
+void ApproximateHierarchy::load(ADDRINT * data, UINT32 size){
 	
 }
-void ApproximateHierarchy::store(UINT64 addr, UINT8 data){
+void ApproximateHierarchy::store(ADDRINT * data, UINT32 size){
+	
+}
+void ApproximateHierarchy::alloc(ADDRINT * data, UINT32 size){
 	
 }
 void ApproximateHierarchy::report(){

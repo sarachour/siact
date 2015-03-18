@@ -49,7 +49,7 @@ Energy Saved Per operation
 typedef struct HW_MODEL_INFO_T {
 	int idx;
 	uint32_t srand;
-	CacheHierarchy * mem;
+	Tuple<PreciseHierarchy,ApproximateHierarchy>* mem;
 } hw_info_t;
 
 
@@ -58,7 +58,7 @@ std::vector<hw_info_t> hw_model_list;
 
 hw_info_t model;
 bool loaded = false;
-extern CacheHierarchy * memory;
+
 KNOB<string> KnobHardwareSpecFile(KNOB_MODE_WRITEONCE, "pintool",
   "hwmodel", "hardwareModel.txt", "specify mappings to a hardware model");
 
@@ -68,7 +68,8 @@ KNOB<INT> KnobGlobalSeed (KNOB_MODE_WRITEONCE, "pintool", "s", "0", "Set global 
 void print_hardware_fault_model(FILE * out){
   fprintf(out, "Hardware Fault Model Info\n");
   fprintf(out, "idx: %d, seed: %d\n", model.idx, model.srand);
-  model.mem->description();
+  if(model.mem->hasFirst()) model.mem->first()->description(); 
+  else model.mem->second()->description();
 
 }
 
@@ -150,18 +151,18 @@ void readHardwareFaultModelFile(){
 				  memmodel = MemoryModelNone;
 			  }
               if(strcmp(overalltype, "precise")){
-				  templ.mem = new PreciseHierarchy(
+				  templ.mem = new Tuple<PreciseHierarchy,ApproximateHierarchy>(new PreciseHierarchy(
 					l1i_cache, l1i_line, l1i_assoc,
 					l1d_cache, l1d_line, l1d_assoc,
-					l2_cache, l2_line, l2_assoc);
+					l2_cache, l2_line, l2_assoc));
 			  }
 			  else if(strcmp(overalltype, "approximate")){
-				   templ.mem = new ApproximateHierarchy(
-					l1i_cache, l1i_line, l1i_assoc,
-					l1d_cache, l1d_line, l1d_assoc,
-					l2_cache, l2_line, l2_assoc,
-					l1dmodel, l2model, memmodel
-					);
+				   templ.mem = new Tuple<PreciseHierarchy,ApproximateHierarchy>(
+						new ApproximateHierarchy(
+						l1i_cache, l1i_line, l1i_assoc,
+						l1d_cache, l1d_line, l1d_assoc,
+						l2_cache, l2_line, l2_assoc,
+						l1dmodel, l2model, memmodel));
 			  }
               hw_model_list.push_back(templ);
 
