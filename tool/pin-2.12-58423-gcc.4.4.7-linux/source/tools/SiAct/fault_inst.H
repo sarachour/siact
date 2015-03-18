@@ -46,8 +46,9 @@ VOID InstrumentNormalInstruction(INS ins){
 		
         if (INS_IsMemoryWrite(ins))
         {
+			//modify thing we're writing
             INS_InsertPredicatedCall(
-				ins, IPOINT_BEFORE,  (AFUNPTR) siStoreMem,
+				ins, IPOINT_AFTER,  (AFUNPTR) siStoreMem,
 				IARG_MEMORYWRITE_EA,
 				IARG_MEMORYWRITE_SIZE,
 				IARG_BOOL, INS_IsStackWrite(ins),
