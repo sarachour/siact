@@ -131,7 +131,7 @@ void readHardwareFaultModelFile(){
               
               templ.srand = KnobGlobalSeed.Value() + seed;
               templ.idx = idx;
-              if(strcmp(sramtype, "med")){
+              if(strcmp(sramtype, "medium")){
 				  l1dmodel = l2model = CacheModelMedium;
 			  }
 			  else if(strcmp(sramtype, "heavy")){

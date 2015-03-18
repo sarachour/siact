@@ -12,6 +12,8 @@ void app1(){
 
 int main(){
 	PIN_BIND_MODEL(1);
+	pin_start_inject_errors();
 	app1();
+	pin_start_inject_errors();
 	
 }

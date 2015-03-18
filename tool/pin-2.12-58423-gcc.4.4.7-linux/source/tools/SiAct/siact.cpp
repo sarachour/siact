@@ -195,7 +195,6 @@ VOID BindFxns(RTN rtn, VOID *v){
 }
 VOID Trace(TRACE trace, VOID *v)
 {
-	
     for (BBL bbl = TRACE_BblHead(trace); BBL_Valid(bbl); bbl = BBL_Next(bbl))
     {
         
@@ -276,6 +275,7 @@ int main(int argc, CHAR *argv[])
 	*/
 	
 	// Never returns
+	printf("##### STARTING PROGRAM #######\n");
     PIN_StartProgram();
     
     return 0;

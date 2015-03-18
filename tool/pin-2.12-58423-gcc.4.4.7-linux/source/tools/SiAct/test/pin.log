@@ -1,2 +1,2 @@
 Pin 2.12 kit 58423
-E: Unable to load /mnt/hgfs/sachour/Documents/git/research/topaz/emul/siact/tool/pin-2.12-58423-gcc.4.4.7-linux/source/tools/SiAct/test/../obj-intel64/siact.so: /mnt/hgfs/sachour/Documents/git/research/topaz/emul/siact/tool/pin-2.12-58423-gcc.4.4.7-linux/source/tools/SiAct/test/../obj-intel64/siact.so: undefined symbol: _ZN16PreciseHierarchyC1Ejjjjjjjjj
+E: fault_inst.H:70: IARG_MEMORY*_EA is only valid at IPOINT_BEFORE

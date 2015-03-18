@@ -10,11 +10,12 @@
 
 extern CacheHierarchy * memory;
 
-VOID PIN_FAST_ANALYSIS_CALL siLoadMem(ADDRINT * data, UINT32 size){
-	
+VOID PIN_FAST_ANALYSIS_CALL siLoadMem(ADDRINT data, UINT32 size, BOOL isStack ){
+	printf("read %lx size=%d is_stack:%s\n", data, size, isStack ? "y" : "n");
 }
 
-VOID PIN_FAST_ANALYSIS_CALL siStoreMem(ADDRINT * data, UINT32 size){
+VOID PIN_FAST_ANALYSIS_CALL siStoreMem(ADDRINT data, UINT32 size, BOOL isStack){
+	printf("write %lx size=%d is_stack:%s\n", data, size, isStack ? "y" : "n");
 	
 }
 
@@ -25,7 +26,6 @@ VOID InstrumentNormalInstruction(INS ins){
         
         if (INS_IsMemoryRead(ins))
         {
-			printf("mem read\n");
 			//multi if size > 4
 			INS_InsertPredicatedCall(
 				ins, IPOINT_BEFORE,  (AFUNPTR) siLoadMem,
@@ -33,43 +33,26 @@ VOID InstrumentNormalInstruction(INS ins){
 				IARG_MEMORYREAD_SIZE,
 				IARG_END);
         }
-        else if(INS_IsStackRead(ins)){
-			printf("stack read\n");
-			INS_InsertPredicatedCall(
-				ins, IPOINT_BEFORE,  (AFUNPTR) siLoadMem,
-				IARG_MEMORYREAD_EA,
-				IARG_MEMORYREAD_SIZE,
-				IARG_END);
-		}
 		
         if(INS_HasMemoryRead2(ins)){
 			//multi if size > 4
-			printf("mem read 2\n");
 			INS_InsertPredicatedCall(
 				ins, IPOINT_BEFORE,  (AFUNPTR) siLoadMem,
 				IARG_MEMORYREAD2_EA,
 				IARG_MEMORYREAD_SIZE,
+				IARG_BOOL, INS_IsStackRead(ins),
 				IARG_END);
 		}
 		
         if (INS_IsMemoryWrite(ins))
         {
-			printf("mem write\n");
             INS_InsertPredicatedCall(
 				ins, IPOINT_BEFORE,  (AFUNPTR) siStoreMem,
 				IARG_MEMORYWRITE_EA,
 				IARG_MEMORYWRITE_SIZE,
+				IARG_BOOL, INS_IsStackWrite(ins),
 				IARG_END);
         }
-        else if(INS_IsStackWrite(ins)){
-			printf("stack write\n");
-			INS_InsertPredicatedCall(
-				ins, IPOINT_AFTER,  (AFUNPTR) siStoreMem,
-				IARG_MEMORYWRITE_EA,
-				IARG_MEMORYWRITE_SIZE,
-				IARG_END);
-			
-		}
 }
 
 VOID InstrumentTimerInstruction(INS inst){
