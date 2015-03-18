@@ -1,2 +1,3 @@
 Pin 2.12 kit 58423
-E: fault_inst.H:70: IARG_MEMORY*_EA is only valid at IPOINT_BEFORE
+E: fault_inst.H:79 cannot insert IPOINT_AFTER on an instruction without a fall-through path
+     137 0x0000000000400a52 call 0x4009f2
