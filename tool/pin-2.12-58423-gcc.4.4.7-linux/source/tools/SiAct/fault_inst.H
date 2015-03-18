@@ -22,13 +22,12 @@ VOID PIN_FAST_ANALYSIS_CALL siPrecStoreMem(ADDRINT * data, UINT32 size, BOOL isS
 
 VOID PIN_FAST_ANALYSIS_CALL siApproxLoadMem(ADDRINT * data, UINT32 size, BOOL isStack ){
 	//printf("approx read %lx deref size=%d is_stack:%s\n", (UINT64) data, size, isStack ? "y" : "n");
-	approx_mem->load(data,size);
+	approx_mem->load(data,size, isStack);
 }
 VOID PIN_FAST_ANALYSIS_CALL siApproxStoreMem(ADDRINT * data, UINT32 size, BOOL isStack){
 	//printf("approx write %lx size=%d is_stack:%s\n", (UINT64) data, size, isStack ? "y" : "n");
 	//approximate store if on stack
-	if(isStack) approx_mem->alloc(data,size); 
-	approx_mem->store(data,size);	
+	approx_mem->store(data,size, isStack);	
 }
 
 

@@ -34,9 +34,9 @@ class ApproximateHierarchy {
 			UINT32 l1d_cachesize, UINT32 l1d_linesize, UINT32 l1d_assoc,
 			UINT32 l2_cachesize, UINT32 l2_linesize, UINT32 l2_assoc,
 			ApproximateCacheModel L1m, ApproximateCacheModel L2m, ApproximateMemoryModel Mm);
-		 void load(ADDRINT * data, UINT32 size);
-		 void store(ADDRINT * data, UINT32 size);
-		 void alloc(ADDRINT * data, UINT32 size);
+		 void load(ADDRINT * data, UINT32 size, BOOL approx);
+		 void store(ADDRINT * data, UINT32 size, BOOL approx);
+		 void alloc(ADDRINT * data, UINT32 size, BOOL approx);
 		 void report();
 		 void elapsed(UINT64 msec);
 		 void description();

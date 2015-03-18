@@ -36,16 +36,14 @@ class APPROXCACHE : public CACHE_BASE{
 				ApproximateCacheModel model);
 		// modifiers
 		//determine if access should be unreliable
-		bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType);
+		bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, BOOL approx_set, BOOL& approx_get);
 		/// Cache access at addr that does not span cache lines
-		bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType);
+		bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, BOOL approx_set, BOOL& approx_get);
 		void ProcessData(UINT8 * data, ACCESS_TYPE accessType);
 		void Report();
 		void Description();
 };
-#define APPROX_CACHE_DIRECT_MAPPED(MAX_SETS, ALLOCATION) APPROXCACHE<DIRECT_MAPPED, MAX_SETS, ALLOCATION>
-#define APPROX_CACHE_ROUND_ROBIN(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) APPROXCACHE<ROUND_ROBIN<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
-#define APPROX_CACHE_LRU(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) APPROXCACHE<LRU<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
+#define APPROX_CACHE_LRU(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) APPROXCACHE<ALRU<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
 
 
 class APPROXMEMORY : public MEMORY_BASE {

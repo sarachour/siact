@@ -28,7 +28,7 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType){
+bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, BOOL SET_APPROX, BOOL& GET_APPROX){
 	const ADDRINT highAddr = addr + size;
     bool allHit = true;
 
@@ -43,14 +43,14 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 siz
 
         SET & set = _sets[setIndex];
 
-        bool localHit = set.Find(tag);
+        bool localHit = set.Find(tag, GET_APPROX);
         allHit &= localHit;
 
 
         // on miss, loads always allocate, stores optionally
         if ( (! localHit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
         {
-            set.Replace(tag);
+            set.Replace(tag, SET_APPROX);
         }
 
         addr = (addr & notLineMask) + lineSize; // start of next cache line
@@ -63,7 +63,7 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 siz
 }
 /// Cache access at addr that does not span cache lines
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType){
+bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, BOOL SET_APPROX, BOOL& GET_APPROX){
 	CACHE_TAG tag;
     UINT32 setIndex;
 
@@ -71,13 +71,13 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, 
 
     SET & set = _sets[setIndex];
 
-    bool hit = set.Find(tag);
+    bool hit = set.Find(tag, GET_APPROX);
 
 
     // on miss, loads always allocate, stores optionally
     if ( (! hit) && (accessType == ACCESS_TYPE_LOAD || STORE_ALLOCATION == STORE_ALLOCATE))
     {
-        set.Replace(tag);
+        set.Replace(tag, SET_APPROX);
     }
 
     _access[accessType][hit]++; //hit/miss count of the cache

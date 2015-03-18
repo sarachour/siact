@@ -44,18 +44,20 @@ ApproximateHierarchy::ApproximateHierarchy(UINT32 l1i_cachesize, UINT32 l1i_line
 	L2 = new APPROX_CACHE_LRU(64 * KILO, 64, STORE_ALLOCATE)("L2",l2_cachesize, l2_linesize, l2_assoc, L2m);
 	MEM = new APPROXMEMORY(Mm);
 }
-void ApproximateHierarchy::load(ADDRINT * data, UINT32 size){
-	bool L1_HIT = L1D->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_LOAD);
+void ApproximateHierarchy::load(ADDRINT * data, UINT32 size, BOOL approx){
+	bool APPROX_SET = approx;
+	bool APPROX_GET;
+	bool L1_HIT = L1D->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
 	if(L1_HIT){
 		//printf("L1 HIT\n");
-		L1D->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_LOAD);
+		if(APPROX_GET) L1D->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_LOAD);
 	}
 	else{
 		//printf("L1 MISS\n");
-		bool L2_HIT = L2->Access((ADDRINT) data,size,CACHE_BASE::ACCESS_TYPE_LOAD);
+		bool L2_HIT = L2->Access((ADDRINT) data,size,CACHE_BASE::ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
 		if(L2_HIT){
 			//printf("L2 HIT\n");
-			L2->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_LOAD);
+			if(APPROX_GET) L2->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_LOAD);
 		}
 		else{
 			//printf("L2 MISS\n");
@@ -64,18 +66,20 @@ void ApproximateHierarchy::load(ADDRINT * data, UINT32 size){
 		}
 	}
 }
-void ApproximateHierarchy::store(ADDRINT * data, UINT32 size){
-	bool L1_HIT = L1D->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_STORE);
+void ApproximateHierarchy::store(ADDRINT * data, UINT32 size, BOOL approx){
+	bool APPROX_SET = approx;
+	bool APPROX_GET;
+	bool L1_HIT = L1D->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_STORE, APPROX_SET, APPROX_GET);
 	if(L1_HIT){
 		//printf("L1 HIT\n");
-		L1D->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_STORE);
+		if(APPROX_GET) L1D->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_STORE);
 	}
 	else{
 		//printf("L1 MISS\n");
-		bool L2_HIT = L2->Access((ADDRINT) data, size,CACHE_BASE::ACCESS_TYPE_STORE);
+		bool L2_HIT = L2->Access((ADDRINT) data, size, CACHE_BASE::ACCESS_TYPE_STORE, APPROX_SET, APPROX_GET);
 		if(L2_HIT){
 			//printf("L2 HIT\n");
-			L2->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_STORE);
+			if(APPROX_GET) L2->ProcessData(reinterpret_cast<UINT8*>(data), CACHE_BASE::ACCESS_TYPE_STORE);
 		}
 		else{
 			//printf("L2 MISS\n");
@@ -84,7 +88,7 @@ void ApproximateHierarchy::store(ADDRINT * data, UINT32 size){
 		}
 	}
 }
-void ApproximateHierarchy::alloc(ADDRINT * data, UINT32 size){
+void ApproximateHierarchy::alloc(ADDRINT * data, UINT32 size, BOOL approx){
 	
 }
 void ApproximateHierarchy::report(){
