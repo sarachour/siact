@@ -4,6 +4,8 @@ void app1(){
 	float fbar;
 	float foot=0;
 	fbar = 1.0*15-3;
+	pin_mark_urel((uint64_t) &fbar, sizeof(float));
+	pin_mark_urel((uint64_t) &foot, sizeof(float));
 	for(int i=0; i < 100000; i++){
 		foot += fbar/i;
 	}

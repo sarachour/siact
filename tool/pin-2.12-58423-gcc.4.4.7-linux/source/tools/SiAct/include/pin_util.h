@@ -1,6 +1,7 @@
 #ifndef PIN_UTIL_H
 #define PIN_UTIL_H
 #include "stdio.h"
+#include <stdint.h>
 
 typedef enum timer_label {
 	TOPAZ_TIMER=0, //topaz routines
@@ -41,6 +42,7 @@ void PIN_STOP_TASK(int tidx, double * args);
 void PIN_START_INJECT_ERRORS();
 void PIN_STOP_INJECT_ERRORS();
 void PIN_REFRESH_DRAM();
+void PIN_UREL_MALLOC(uint64_t addr, uint32_t size);
 
 void pin_start_inject_errors();
 void pin_stop_inject_errors();
@@ -49,7 +51,7 @@ double * pin_store_err(pin_error_info * m,double * v);
 double * pin_load_err(pin_error_info * m, double * v);
 double * pin_store_task(pin_task_info_t * m, double  * v);
 double * pin_load_task(pin_task_info_t * m, double * v);
-
+void pin_mark_urel(uint64_t ptr, uint32_t size);
 void pin_refresh_dram();
 void pin_start_task(int id);
 void pin_stop_task(int id,pin_task_info_t * t);

@@ -45,6 +45,11 @@ void pin_bind_model(int midx){
 void pin_refresh_dram(){
 	PIN_REFRESH_DRAM();
 }
+
+void PIN_UREL_MALLOC(uint64_t addr, uint32_t size){
+	
+}
+
 double * pin_load_err(pin_error_info * m, double * v){
 	m->err = *v; v++;
 	m->instr = *v; v++;
@@ -105,5 +110,9 @@ void pin_stop_timer(int i, pin_timer_info_t * t){
 }
 void pin_print_timer(FILE * out, const char * name, pin_timer_info_t *t){
 	fprintf(out, "%s\t%ld", name, t->inst);
+}
+
+void pin_mark_urel(uint64_t ptr, uint32_t size){
+	PIN_UREL_MALLOC(ptr, size);
 }
 
