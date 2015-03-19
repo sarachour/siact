@@ -4,7 +4,7 @@ void app1(){
 	float fbar;
 	float foot=0;
 	fbar = 1.0*15-3;
-	for(int i=0; i < 10000; i++){
+	for(int i=0; i < 100000; i++){
 		foot += fbar/i;
 	}
 	
