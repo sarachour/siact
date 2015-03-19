@@ -27,6 +27,17 @@ class APPROXCACHE : public CACHE_BASE{
 	private:
 		SET _sets[MAX_SETS];
 		ApproximateCacheModel model;
+		typedef struct APPROXCACHE_STATS {
+			UINT64 TOTAL_APPROX_ACCESSES;
+			UINT64 TOTAL_PRECISE_ACCESSES;
+			UINT64 TOTAL_APPROX_LINES[MAX_SETS];
+			UINT64 TOTAL_PRECISE_LINES[MAX_SETS];
+			UINT64 N;
+		} approx_cache_stats_t;
+		approx_cache_stats_t acache_stats;
+		void initApproxStats();
+		void updateApproxStats(BOOL approx);
+		void printApproxStats();
 	public:
 		// constructors/destructors
 		APPROXCACHE(std::string name, 

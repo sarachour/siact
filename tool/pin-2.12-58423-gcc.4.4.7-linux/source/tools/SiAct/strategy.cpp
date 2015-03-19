@@ -109,10 +109,14 @@ ALRU<MAX_ASSOCIATIVITY>::ALRU()
 	_tags.reserve(associativity);
 	_tagsPriority.reserve(associativity);
 	_currentMaxPriority = 1;
+	NPRECISE_LINES = 0;
+	NAPPROX_LINES = 0;
 	for (INT32 index = _tagsLastIndex; index >= 0; index--)
 	{
 		_tags.push_back(CACHE_TAG(0));
 		_tagsPriority.push_back(0);
+		_tagsApprox.push_back(true);
+		NPRECISE_LINES++;
 	}
 }
 
@@ -125,10 +129,14 @@ ALRU<MAX_ASSOCIATIVITY>::ALRU(UINT32 associativity)
 	_tags.reserve(associativity);
 	_tagsPriority.reserve(associativity);
 	_currentMaxPriority = 1;
+	NPRECISE_LINES = 0;
+	NAPPROX_LINES = 0;
 	for (INT32 index = _tagsLastIndex; index >= 0; index--)
 	{
 		_tags.push_back(CACHE_TAG(0));
 		_tagsPriority.push_back(0);
+		_tagsApprox.push_back(false);
+		NPRECISE_LINES++;
 	}
 }
 
@@ -157,6 +165,7 @@ UINT32 ALRU<MAX_ASSOCIATIVITY>::Find(CACHE_TAG tag, BOOL& APPROX)
 	// _tags.erase(_tags.begin()+index);
 	// _tags.insert(_tags.begin(), tempTag);
 		_tagsPriority[index] = _currentMaxPriority++;
+		APPROX = _tagsApprox[index]; //update approximate
 		goto end;
 	}
   }
@@ -191,8 +200,19 @@ void ALRU<MAX_ASSOCIATIVITY>::Replace(CACHE_TAG tag, BOOL approx)
 		minIndex = index;
 	}
   }
+  BOOL OLD_APPROX= _tagsApprox[minIndex];
   _tags[minIndex] = tag;
   _tagsPriority[minIndex] = _currentMaxPriority++;
+  _tagsApprox[minIndex] = approx;
+  
+  if(!OLD_APPROX && approx){
+	  NAPPROX_LINES += 1;
+	  NPRECISE_LINES -= 1;
+  }
+  if(OLD_APPROX && !approx){
+	  NAPPROX_LINES -= 1;
+	  NPRECISE_LINES +=1;
+  }
 }
 
 template class LRU<64>;

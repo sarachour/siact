@@ -32,9 +32,11 @@ class ALRU
   private:
     vector<CACHE_TAG> _tags;
     vector<UINT64> _tagsPriority;
-    vector<BOOL> _approxLoad;
+    vector<BOOL> _tagsApprox;
     UINT32 _tagsLastIndex;
     UINT64 _currentMaxPriority;
+    UINT32 NAPPROX_LINES;
+    UINT32 NPRECISE_LINES;
   public:
     ALRU();
     ALRU(UINT32 associativity); //MAX_ASSOCIATIVITY by default
@@ -43,7 +45,8 @@ class ALRU
     UINT32 Find(CACHE_TAG tag, BOOL& approx);
     std::string UpdateOwner(CACHE_TAG tag, string newCacheLineOwner);
     void Replace(CACHE_TAG tag, BOOL approx);
-
+    UINT32 getNApproxLines(){return NAPPROX_LINES;}
+    UINT32 getNPreciseLines(){return NPRECISE_LINES;}
 };
 
 
