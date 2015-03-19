@@ -158,9 +158,10 @@ template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	UINT32 PROB = ERR_PROB[accessType];
 	if(xorshift32() < PROB){
-			printf("corrupt\n");
+			printf("corrupt %d %d\n", data[0], size);
 			UINT64 mask = xorshift64();
 			PIN_SafeCopy(data, &mask, size);
+			printf("corrupt %d %d\n", data[0], size);
 	}
 }
 
