@@ -1,6 +1,9 @@
 #include "approx.H"
 #include "stdio.h"
-
+#include "helper.H"
+#include "math.h"
+#include "xorshift.H"
+#include "pin.H"
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::APPROXCACHE(string name, UINT32 cacheSize, UINT32 lineSize, UINT32 associativity, ApproximateCacheModel model):
@@ -12,6 +15,22 @@ APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::APPROXCACHE(string name, UINT32 cach
 	for (UINT32 i = 0; i < NumSets(); i++)
 	{
 		_sets[i].SetAssociativity(associativity);
+	}
+	this->model = model;
+	ERR_PROB[ACCESS_TYPE_NUM] = 0;
+	switch(this->model){
+		case CacheModelMedium:
+			ERR_PROB[ACCESS_TYPE_LOAD]  = pow(10,-7.4)*RGEN_MAX;
+			ERR_PROB[ACCESS_TYPE_STORE]  = pow(10,-4.94)*RGEN_MAX;
+			break;
+		case CacheModelHeavy:
+			ERR_PROB[ACCESS_TYPE_LOAD]  = pow(10,-3)*RGEN_MAX;
+			ERR_PROB[ACCESS_TYPE_STORE]  = pow(10,-3)*RGEN_MAX;
+			break;
+		case CacheModelNone:
+			ERR_PROB[ACCESS_TYPE_LOAD]  = 0;
+			ERR_PROB[ACCESS_TYPE_STORE] = 0;
+			break;
 	}
 	initApproxStats();
 }
@@ -67,6 +86,8 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
 		case CacheModelHeavy: printf("Model: %s\n", "Heavy"); break;
 		case CacheModelNone: printf("Model: %s\n", "None"); break;
 	}
+	printf("Perr(READ) = %e\n", static_cast<float>(ERR_PROB[ACCESS_TYPE_LOAD])/RGEN_MAX );
+	printf("Perr(WRITE) = %e\n", static_cast<float>(ERR_PROB[ACCESS_TYPE_STORE])/RGEN_MAX );
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
@@ -134,8 +155,13 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, 
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, ACCESS_TYPE accessType){
-
+void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
+	UINT32 PROB = ERR_PROB[accessType];
+	if(xorshift32() < PROB){
+			printf("corrupt\n");
+			UINT64 mask = xorshift64();
+			PIN_SafeCopy(data, &mask, size);
+	}
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>

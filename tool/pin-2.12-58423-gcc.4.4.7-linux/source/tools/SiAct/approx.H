@@ -34,7 +34,9 @@ class APPROXCACHE : public CACHE_BASE{
 			UINT64 TOTAL_PRECISE_LINES[MAX_SETS];
 			UINT64 N;
 		} approx_cache_stats_t;
+		
 		approx_cache_stats_t acache_stats;
+		UINT32 ERR_PROB[3];
 		void initApproxStats();
 		void updateApproxStats(BOOL approx);
 		void printApproxStats();
@@ -50,7 +52,7 @@ class APPROXCACHE : public CACHE_BASE{
 		bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, BOOL approx_set, BOOL& approx_get);
 		/// Cache access at addr that does not span cache lines
 		bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, BOOL approx_set, BOOL& approx_get);
-		void ProcessData(UINT8 * data, ACCESS_TYPE accessType);
+		void ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
 		void Report();
 		void Description();
 };

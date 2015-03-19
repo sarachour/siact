@@ -31,9 +31,9 @@ class CACHE_BASE
     // types, constants
     typedef enum 
     {
-        ACCESS_TYPE_LOAD,
-        ACCESS_TYPE_STORE,
-        ACCESS_TYPE_NUM
+        ACCESS_TYPE_LOAD=0,
+        ACCESS_TYPE_STORE=1,
+        ACCESS_TYPE_NUM=2
     } ACCESS_TYPE;
     
 
@@ -111,7 +111,7 @@ class CACHE : public CACHE_BASE
     bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType);
     /// Cache access at addr that does not span cache lines
     bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType);
-    void ProcessData(UINT8 * data, ACCESS_TYPE accessType);
+    void ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
     void Report();
     void Description();
 };

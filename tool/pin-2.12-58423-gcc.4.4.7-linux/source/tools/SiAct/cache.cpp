@@ -204,7 +204,7 @@ void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, ACCESS_TYPE accessType){
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	
 }
 
