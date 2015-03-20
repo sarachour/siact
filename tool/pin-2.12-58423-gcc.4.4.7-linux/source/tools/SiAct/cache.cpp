@@ -136,6 +136,7 @@ template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType)
 {
     const ADDRINT highAddr = addr + size;
+    const ADDRINT lowAddr = addr;
     bool allHit = true;
 
     const ADDRINT lineSize = LineSize();
@@ -161,7 +162,7 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACC
 
         addr = (addr & notLineMask) + lineSize; // start of next cache line
     }
-    while (addr < highAddr);
+    while (addr < highAddr && addr >= lowAddr);
 
     _access[accessType][allHit]++; //hit/miss count of the cache
 

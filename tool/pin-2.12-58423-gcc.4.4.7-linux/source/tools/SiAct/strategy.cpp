@@ -214,6 +214,29 @@ void ALRU<MAX_ASSOCIATIVITY>::Replace(CACHE_TAG tag, BOOL approx)
 	  NPRECISE_LINES +=1;
   }
 }
+template <UINT32 MAX_ASSOCIATIVITY>
+void ALRU<MAX_ASSOCIATIVITY>::setApprox(CACHE_TAG tag, BOOL approx)
+{
+  for (UINT32 index = 0; index <= _tagsLastIndex; ++index)
+  {
+	if(_tags[index] == tag) 
+	{
+		bool oldApprox = _tagsApprox[index];
+		_tagsApprox[index] = approx;
+		if(!oldApprox && approx){
+			NAPPROX_LINES += 1;
+			NPRECISE_LINES -= 1;
+		}
+		if(oldApprox && !approx){
+			NAPPROX_LINES -= 1;
+			NPRECISE_LINES +=1;
+		}
+		return;
+	}
+  }
+
+  
+}
 
 template class LRU<64>;
 template class ALRU<64>;

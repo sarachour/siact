@@ -45,6 +45,7 @@ class ALRU
     UINT32 Find(CACHE_TAG tag, BOOL& approx);
     std::string UpdateOwner(CACHE_TAG tag, string newCacheLineOwner);
     void Replace(CACHE_TAG tag, BOOL approx);
+    void setApprox(CACHE_TAG tag, BOOL approx);
     UINT32 getNApproxLines(){return NAPPROX_LINES;}
     UINT32 getNPreciseLines(){return NPRECISE_LINES;}
 };

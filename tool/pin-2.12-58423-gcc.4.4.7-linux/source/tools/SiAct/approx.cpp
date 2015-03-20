@@ -93,6 +93,7 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, BOOL SET_APPROX, BOOL& GET_APPROX){
 	const ADDRINT highAddr = addr + size;
+	const ADDRINT lowAddr = addr;
     bool allHit = true;
 
     const ADDRINT lineSize = LineSize();
@@ -116,12 +117,20 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Access(ADDRINT addr, UINT32 siz
             set.Replace(tag, SET_APPROX);
 			updateApproxStats(SET_APPROX);
         }
+        else if(localHit && !GET_APPROX && SET_APPROX){
+            set.setApprox(tag, SET_APPROX);
+			updateApproxStats(SET_APPROX);
+		}
+		else if(localHit && GET_APPROX && !SET_APPROX){
+            set.setApprox(tag, SET_APPROX);
+			updateApproxStats(SET_APPROX);
+		}
         else{
 			updateApproxStats(GET_APPROX);
 		}
         addr = (addr & notLineMask) + lineSize; // start of next cache line
     }
-    while (addr < highAddr);
+    while (addr < highAddr && addr >= lowAddr);
 
     _access[accessType][allHit]++; //hit/miss count of the cache
     return allHit;
@@ -158,10 +167,8 @@ template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	UINT32 PROB = ERR_PROB[accessType];
 	if(xorshift32() < PROB){
-			printf("corrupt %d %d\n", data[0], size);
 			UINT64 mask = xorshift64();
 			PIN_SafeCopy(data, &mask, size);
-			printf("corrupt %d %d\n", data[0], size);
 	}
 }
 

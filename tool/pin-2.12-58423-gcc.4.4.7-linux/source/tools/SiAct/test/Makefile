@@ -2,7 +2,7 @@ CC=g++
 INCLUDE="-I../include"
 DEPS="../include/pin_util.o"
 
-all: deps test.app1 test.app2 test.app3
+all: deps test.app1 test.app2 test.app3 test.app4
 
 deps:
 	cd ../include; make
