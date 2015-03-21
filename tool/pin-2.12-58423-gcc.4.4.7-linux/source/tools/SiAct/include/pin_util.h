@@ -51,7 +51,7 @@ double * pin_store_err(pin_error_info * m,double * v);
 double * pin_load_err(pin_error_info * m, double * v);
 double * pin_store_task(pin_task_info_t * m, double  * v);
 double * pin_load_task(pin_task_info_t * m, double * v);
-void pin_mark_urel(uint64_t ptr, uint32_t size);
+void pin_mark_urel(void * ptr, uint32_t size);
 void pin_refresh_dram();
 void pin_start_task(int id);
 void pin_stop_task(int id,pin_task_info_t * t);
@@ -61,5 +61,12 @@ void pin_start_timer(int i);
 void pin_stop_timer(int i, pin_timer_info_t * t);
 void pin_print_timer(FILE * out, const char * name, pin_timer_info_t *t);
 
+#define FPUREL(v) pin_mark_urel(&v, sizeof(float));
+#define IUREL(v) pin_mark_urel(&v, sizeof(int));
+#define DBLUREL(v) pin_mark_urel(&v, sizeof(double));
+
+#define FPDEF(v) float v; FPUREL(v);
+#define IDEF(v) int v; IUREL(v);
+#define DBLDEF(v) double v; DBLUREL(v);
 #endif
 

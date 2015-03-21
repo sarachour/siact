@@ -1,5 +1,6 @@
 #include "pin_util.h"
 #include "stdio.h"
+#include "stdint.h"
 //bind the hardware model
 void PIN_REFRESH_DRAM(){
 	
@@ -112,7 +113,7 @@ void pin_print_timer(FILE * out, const char * name, pin_timer_info_t *t){
 	fprintf(out, "%s\t%ld", name, t->inst);
 }
 
-void pin_mark_urel(uint64_t ptr, uint32_t size){
-	PIN_UREL_MALLOC(ptr, size);
+void pin_mark_urel(void * ptr, uint32_t size){
+	PIN_UREL_MALLOC((uint64_t) ptr, size);
 }
 

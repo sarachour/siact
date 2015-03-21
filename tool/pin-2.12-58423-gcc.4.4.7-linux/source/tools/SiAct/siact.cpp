@@ -243,10 +243,16 @@ VOID Fini(int, VOID * v)
 
     out = fopen(filename.c_str(), "w");
 	print_all(out);
-	if(memory->hasFirst()) memory->first()->report(out);
-	else if(memory->hasSecond()) memory->second()->report(out);
+	if(memory->hasFirst()){
+		memory->first()->report(out);
+		delete memory->first();
+	}
+	else if(memory->hasSecond()){
+		memory->second()->report(out);
+		delete memory->second();
+	}
+	printf("[PIN] Wrote Model %d to Log\n", getHWModelIDX());
 	fclose(out);
-	printf("Finished Outputting\n");
 
 }
 
