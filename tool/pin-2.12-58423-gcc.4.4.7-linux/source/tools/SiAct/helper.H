@@ -28,6 +28,13 @@ class CACHE_TAG
     std::string getCacheLineOwner();
 };
 
+typedef enum 
+{
+	ACCESS_TYPE_LOAD=0,
+	ACCESS_TYPE_STORE=1,
+	ACCESS_TYPE_NUM=2
+} ACCESS_TYPE;
+
 /*! RMR (rodric@gmail.com) 
  *   - temporary work around because decstr()
  *     casts 64 bit ints to 32 bit ones

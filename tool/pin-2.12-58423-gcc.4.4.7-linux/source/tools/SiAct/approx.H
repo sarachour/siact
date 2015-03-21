@@ -3,6 +3,7 @@
 
 #include "cache.h"
 #include "memory.h"
+#include "helper.h"
 /*
  * APPROXIMATE CACHE THAT TRACKS WHETHER A LINE IS UNRELIABLE OR NOT
  * 
@@ -60,26 +61,20 @@ class APPROXCACHE : public CACHE_BASE{
 
 
 class APPROXMEMORY : public MEMORY_BASE {
-		UINT64 corruptions;
-		
-		/*
-		 * 
-		 *INSTLIB::ALARM_ICOUNT DRAM_ALARM;
-		#define INSTRUCTIONS_PER_MILLISECOND 2000*1000
-		VOID CORRUPT_DRAM_CALLBACK(VOID * val, CONTEXT * ctxt, VOID * ip, THREADID tid){
-			INSTLIB::ALARM_ICOUNT * al = static_cast<INSTLIB::ALARM_ICOUNT*>(val);
-			report_corrupted_dram();
-			al->SetAlarm(INSTRUCTIONS_PER_MILLISECOND, CORRUPT_DRAM_CALLBACK, &DRAM_ALARM);
-} 
-		*/
-			/*
-		DRAM_ALARM.Activate();
-		DRAM_ALARM.SetAlarm(INSTRUCTIONS_PER_MILLISECOND, CORRUPT_DRAM_CALLBACK, &DRAM_ALARM);
-	*/
+		typedef struct MEM_STATS{
+			UINT64 NREADS;
+			UINT64 NWRITES;
+			UINT64 NCORRUPTIONS;
+		} memory_stats_t;
+		//2*4 Byte Combo Map - neighbors on row-row and word-word
+		float weights[16];
 	public:
 		APPROXMEMORY(ApproximateMemoryModel model);
+		void ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
 		void Report(FILE * out);
 		void Description(FILE * out);
+		void Refresh();
+		void Accumulate(UINT64 msec);
 	
 };
 #endif

@@ -115,7 +115,7 @@ VOID TASK_STOP(int id, double* dat){
 }
 
 VOID TASK_REFRESH_DRAM(){
-	flush_corrupted_dram();
+	if(memory != 0 && memory->hasSecond()) memory->second()->refresh();
 }
 
 VOID task_start_inject(int id){
@@ -256,7 +256,16 @@ VOID Fini(int, VOID * v)
 
 }
 
+const UINT32 INSTRUCTIONS_PER_MILLISECOND=2000*1000;
+INSTLIB::ALARM_ICOUNT CYCLE_ALARM;
 
+VOID TIMER_CALLBACK(VOID * val, CONTEXT * ctxt, VOID * ip, THREADID tid){
+			INSTLIB::ALARM_ICOUNT * al = static_cast<INSTLIB::ALARM_ICOUNT*>(val);
+			if(memory != 0 && memory->hasSecond()){
+				memory->second()->elapsed(1);
+			}
+			al->SetAlarm(INSTRUCTIONS_PER_MILLISECOND, TIMER_CALLBACK, &CYCLE_ALARM);
+} 
 int main(int argc, CHAR *argv[])
 {
     PIN_InitSymbols();
@@ -277,10 +286,10 @@ int main(int argc, CHAR *argv[])
 
     PIN_AddFiniFunction(Fini, 0);
 
-    /*
-	DRAM_ALARM.Activate();
-	DRAM_ALARM.SetAlarm(INSTRUCTIONS_PER_MILLISECOND, CORRUPT_DRAM_CALLBACK, &DRAM_ALARM);
-	*/
+    
+	CYCLE_ALARM.Activate();
+	CYCLE_ALARM.SetAlarm(INSTRUCTIONS_PER_MILLISECOND, TIMER_CALLBACK, &CYCLE_ALARM);
+	
 	
 	// Never returns
 	printf("##### STARTING PROGRAM #######\n");

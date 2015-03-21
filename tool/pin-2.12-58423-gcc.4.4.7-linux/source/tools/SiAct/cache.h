@@ -29,12 +29,6 @@ class CACHE_BASE
 {
   public:
     // types, constants
-    typedef enum 
-    {
-        ACCESS_TYPE_LOAD=0,
-        ACCESS_TYPE_STORE=1,
-        ACCESS_TYPE_NUM=2
-    } ACCESS_TYPE;
     
 
     typedef enum

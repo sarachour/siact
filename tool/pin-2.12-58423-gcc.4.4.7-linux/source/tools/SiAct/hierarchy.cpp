@@ -74,42 +74,43 @@ ApproximateHierarchy::ApproximateHierarchy(UINT32 l1i_cachesize, UINT32 l1i_line
 void ApproximateHierarchy::load(ADDRINT addr, UINT8 * data, UINT32 size, BOOL approx, BOOL& is_transient_error){
 	bool APPROX_SET = approx;
 	bool APPROX_GET;
-	bool L1_HIT = L1D->Access(addr, size,CACHE_BASE::ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
+	bool L1_HIT = L1D->Access(addr, size,ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
 	is_transient_error = true;
 	if(L1_HIT && APPROX_GET){
-		L1D->ProcessData(data, size, CACHE_BASE::ACCESS_TYPE_LOAD);
+		L1D->ProcessData(data, size, ACCESS_TYPE_LOAD);
 	}
 	else if(!L1_HIT){
-		//printf("L1 MISS\n");
-		bool L2_HIT = L2->Access(addr,size,CACHE_BASE::ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
+		bool L2_HIT = L2->Access(addr,size,ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
 		if(L2_HIT && APPROX_GET){
-			L2->ProcessData(data, size, CACHE_BASE::ACCESS_TYPE_LOAD);
+			L2->ProcessData(data, size, ACCESS_TYPE_LOAD);
 		}
 		else if(!L2_HIT){
-			//printf("L2 MISS\n");
-			//printf("TO MAIN MEM\n");
-			//TODO
+			MEM->ProcessData(data,size,ACCESS_TYPE_LOAD);
 		}
 	}
 }
+
 void ApproximateHierarchy::store(ADDRINT addr, UINT8 * data, UINT32 size, BOOL approx){
 	bool APPROX_SET = approx;
 	bool APPROX_GET;
 	
-	bool L1_HIT = L1D->Access(addr, size,CACHE_BASE::ACCESS_TYPE_STORE, APPROX_SET, APPROX_GET);
+	bool L1_HIT = L1D->Access(addr, size,ACCESS_TYPE_STORE, APPROX_SET, APPROX_GET);
 	if(L1_HIT && APPROX_GET){
-		L1D->ProcessData(data, size, CACHE_BASE::ACCESS_TYPE_STORE);
+		L1D->ProcessData(data, size, ACCESS_TYPE_STORE);
 	}
 	else if(!L1_HIT){
-		bool L2_HIT = L2->Access(addr, size, CACHE_BASE::ACCESS_TYPE_STORE, APPROX_SET, APPROX_GET);
+		bool L2_HIT = L2->Access(addr, size, ACCESS_TYPE_STORE, APPROX_SET, APPROX_GET);
 		if(L2_HIT && APPROX_GET){
-			L2->ProcessData(data, size, CACHE_BASE::ACCESS_TYPE_STORE);
+			L2->ProcessData(data, size, ACCESS_TYPE_STORE);
 		}
 		else if(!L2_HIT){
-			//printf("TO MAIN MEM\n");
+			MEM->ProcessData(data,size,ACCESS_TYPE_STORE);
 			//TODO
 		}
 	}
+}
+void ApproximateHierarchy::refresh(){
+	MEM->Refresh();
 }
 void ApproximateHierarchy::alloc(ADDRINT data, UINT32 size, BOOL approx){
 	if(approx) RANGES.def(data, size);
@@ -133,7 +134,7 @@ void ApproximateHierarchy::report(FILE * out){
 	fprintf(out,"-----------------\n");
 }
 void ApproximateHierarchy::elapsed(UINT64 msec){
-
+	MEM->Accumulate(msec);
 }
 void ApproximateHierarchy::description(FILE * out){
 	fprintf(out,"#### DESCRIPTION ######\n");

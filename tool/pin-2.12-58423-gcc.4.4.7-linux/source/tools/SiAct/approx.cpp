@@ -180,9 +180,22 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(FILE * out){
 	printApproxStats(out);
 }
 
+
+
 APPROXMEMORY::APPROXMEMORY(ApproximateMemoryModel model){
 	
 }
+
+void APPROXMEMORY::Refresh(){
+	printf("Refresh Memory\n");
+}
+void APPROXMEMORY::Accumulate(UINT64 msec){
+	printf("Accumulate Memory\n");
+}
+void APPROXMEMORY::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
+	
+}
+
 void APPROXMEMORY::Report(FILE * out){
 	fprintf(out,"Approximate Memory\n");
 }

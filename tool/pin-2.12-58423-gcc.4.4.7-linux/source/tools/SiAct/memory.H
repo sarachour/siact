@@ -16,6 +16,7 @@ class MEMORY_ADDR_RANGES {
 };
 
 class MEMORY_BASE {
+		
 	public:
 		UINT64 Reads();
 		UINT64 Writes();
