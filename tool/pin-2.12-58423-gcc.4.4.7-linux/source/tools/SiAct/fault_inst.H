@@ -19,14 +19,12 @@ VOID PIN_FAST_ANALYSIS_CALL siPrecLoadMem(ADDRINT * addrptr, UINT32 size){
 	ADDRINT addr = (ADDRINT) addrptr;
 	UINT64 data;
 	
-	//PIN_SafeCopy(&data, addrptr, size);
 	precise_mem->load(addr,reinterpret_cast<UINT8*>(&data),size);
 }
 VOID PIN_FAST_ANALYSIS_CALL siPrecStoreMem(ADDRINT * addrptr, UINT32 size){
 	ADDRINT addr = (ADDRINT) addrptr;
 	UINT64 data;
 	
-	//PIN_SafeCopy(&data, addrptr, size);
 	precise_mem->store(addr,reinterpret_cast<UINT8*>(&data),size);
 		
 }
@@ -71,6 +69,7 @@ VOID PIN_FAST_ANALYSIS_CALL siApproxStoreMem(ADDRINT * addrptr, UINT32 size){
 VOID InstrumentNormalInstruction(INS ins){
 		//const UINT32 size = INS_MemoryOperandSize(ins, memOp);
         //const BOOL   single = (size <= 4);
+    if(memory == 0) return;
     UINT32 memOperands = INS_MemoryOperandCount(ins);
 	//printf("cat: %d ret=%d name=%s ban=%s\n", cat, XED_CATEGORY_RET,CATEGORY_StringShort(cat).c_str(), ban ? "y" : "n");
     if(memory->hasFirst())

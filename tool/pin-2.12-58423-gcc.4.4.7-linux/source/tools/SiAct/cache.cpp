@@ -197,11 +197,11 @@ bool CACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, ACCESS
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
-	printf("CACHE %s\n", this->Name().c_str());
-	printf("Line Size: %d\n", this->LineSize());
-	printf("Cache Size: %d\n", this->CacheSize());
-	printf("Associativity: %d\n", this->Associativity());
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(FILE * out){
+	fprintf(out,"CACHE %s\n", this->Name().c_str());
+	fprintf(out,"Line Size: %d\n", this->LineSize());
+	fprintf(out,"Cache Size: %d\n", this->CacheSize());
+	fprintf(out,"Associativity: %d\n", this->Associativity());
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
@@ -210,7 +210,8 @@ void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(){
+void CACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(FILE * out){
+	fprintf(out,"%s\n", this->StatsLong("",CACHE_TYPE_DCACHE).c_str());
 	
 }
 

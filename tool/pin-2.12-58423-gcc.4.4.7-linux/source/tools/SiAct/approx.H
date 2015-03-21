@@ -39,7 +39,7 @@ class APPROXCACHE : public CACHE_BASE{
 		UINT32 ERR_PROB[3];
 		void initApproxStats();
 		void updateApproxStats(BOOL approx);
-		void printApproxStats();
+		void printApproxStats(FILE * out);
 	public:
 		// constructors/destructors
 		APPROXCACHE(std::string name, 
@@ -53,8 +53,8 @@ class APPROXCACHE : public CACHE_BASE{
 		/// Cache access at addr that does not span cache lines
 		bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, BOOL approx_set, BOOL& approx_get);
 		void ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
-		void Report();
-		void Description();
+		void Report(FILE * out);
+		void Description(FILE * out);
 };
 #define APPROX_CACHE_LRU(MAX_SETS, MAX_ASSOCIATIVITY, ALLOCATION) APPROXCACHE<ALRU<MAX_ASSOCIATIVITY>, MAX_SETS, ALLOCATION>
 
@@ -78,8 +78,8 @@ class APPROXMEMORY : public MEMORY_BASE {
 	*/
 	public:
 		APPROXMEMORY(ApproximateMemoryModel model);
-		void Report();
-		void Description();
+		void Report(FILE * out);
+		void Description(FILE * out);
 	
 };
 #endif

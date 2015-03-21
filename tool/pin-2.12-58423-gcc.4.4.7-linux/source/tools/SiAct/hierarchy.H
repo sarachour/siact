@@ -19,8 +19,8 @@ class PreciseHierarchy {
 			UINT32 l2_cachesize, UINT32 l2_linesize, UINT32 l2_assoc);
 		 void load(ADDRINT addr, UINT8 * data, UINT32 size);
 		 void store(ADDRINT addr, UINT8 * data, UINT32 size);
-		 void report();
-		 void description();
+		 void report(FILE * out);
+		 void description(FILE * out);
 };
 
 class ApproximateHierarchy {
@@ -38,9 +38,9 @@ class ApproximateHierarchy {
 		 void store(ADDRINT addr, UINT8 * data, UINT32 size, BOOL approx);
 		 void alloc(ADDRINT data, UINT32 size, BOOL approx);
 		 bool approx(ADDRINT data);
-		 void report();
+		 void report(FILE * out);
 		 void elapsed(UINT64 msec);
-		 void description();
+		 void description(FILE * out);
 };
 
 template <class S, class T> 

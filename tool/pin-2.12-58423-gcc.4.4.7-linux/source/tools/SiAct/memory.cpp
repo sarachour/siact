@@ -3,11 +3,16 @@
 #include "stdio.h"
 #include "hierarchy.H"
 
-extern ApproximateHierarchy * approx_mem;
+extern Tuple<PreciseHierarchy,ApproximateHierarchy> * memory;
 
 VOID mem_urel_alloc(UINT64 address, UINT32 length){
+
 	printf("[UMEM] unreliable memory allocation: %lx %d\n", address, length);	
-	approx_mem->alloc(address, length, true);
+	if(memory->hasSecond())
+		memory->second()->alloc(address, length, true);
+	else
+		printf("[UMEM|ERROR] Failed to allocate. Approximate machine not used.\n");
+	printf("[UMEM] allocated.\n");
 }
 void MEMORY_ADDR_RANGES::def(UINT64 start, UINT32 length){
 	addr_range_t a;
@@ -29,4 +34,12 @@ bool MEMORY_ADDR_RANGES::contains(UINT64 addr){
 		if(addrs[i].start <= addr && addrs[i].end > addr) return true;
 	}
 	return false;
+}
+
+
+void MEMORY::Report(FILE * out){
+	
+}
+void MEMORY::Description(FILE * out){
+	
 }

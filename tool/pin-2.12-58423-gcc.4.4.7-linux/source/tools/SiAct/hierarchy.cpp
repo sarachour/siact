@@ -25,13 +25,34 @@ void PreciseHierarchy::load(ADDRINT addr, UINT8 * data, UINT32 size){
 void PreciseHierarchy::store(ADDRINT addr, UINT8 * data, UINT32 size){
 	
 }
-void PreciseHierarchy::report(){
-	
+void PreciseHierarchy::report(FILE * out){
+	fprintf(out,"#### REPORT ######\n");
+	fprintf(out,"Precise Hierarchy\n");
+	fprintf(out,"===== Caches =====\n");
+	L1I->Report(out);
+	fprintf(out,"-----------------\n");
+	L1D->Report(out);
+	fprintf(out,"-----------------\n");
+	L2->Report(out);
+	fprintf(out,"-----------------\n");
+	fprintf(out,"===== Main Memory =====\n");
+	MEM->Report(out);
+	fprintf(out,"-----------------\n");
 }
 
-void PreciseHierarchy::description(){
+void PreciseHierarchy::description(FILE * out){
+	fprintf(out,"#### DESCRIPTION ######\n");
 	printf("Precise Hierarchy\n");
-	
+	fprintf(out,"===== Caches =====\n");
+	L1I->Description(out);
+	fprintf(out,"-----------------\n");
+	L1D->Description(out);
+	fprintf(out,"-----------------\n");
+	L2->Description(out);
+	fprintf(out,"-----------------\n");
+	fprintf(out,"===== Main Memory =====\n");
+	MEM->Description(out);
+	fprintf(out,"-----------------\n");
 }
 
 
@@ -91,34 +112,34 @@ void ApproximateHierarchy::alloc(ADDRINT data, UINT32 size, BOOL approx){
 bool ApproximateHierarchy::approx(ADDRINT data){
 	return RANGES.contains(data);
 }
-void ApproximateHierarchy::report(){
-	printf("#### REPORT ######\n");
-	printf("Approximate Hierarchy\n");
-	printf("===== Caches =====\n");
-	L1I->Report();
-	printf("-----------------\n");
-	L1D->Report();
-	printf("-----------------\n");
-	L2->Report();
-	printf("-----------------\n");
-	printf("===== Main Memory =====\n");
-	MEM->Report();
-	printf("-----------------\n");
+void ApproximateHierarchy::report(FILE * out){
+	fprintf(out,"#### REPORT ######\n");
+	fprintf(out,"Approximate Hierarchy\n");
+	fprintf(out,"===== Caches =====\n");
+	L1I->Report(out);
+	fprintf(out,"-----------------\n");
+	L1D->Report(out);
+	fprintf(out,"-----------------\n");
+	L2->Report(out);
+	fprintf(out,"-----------------\n");
+	fprintf(out,"===== Main Memory =====\n");
+	MEM->Report(out);
+	fprintf(out,"-----------------\n");
 }
 void ApproximateHierarchy::elapsed(UINT64 msec){
 
 }
-void ApproximateHierarchy::description(){
-	printf("#### DESCRIPTION ######\n");
-	printf("Approximate Hierarchy\n");
-	printf("===== Caches =====\n");
-	L1I->Description();
-	printf("-----------------\n");
-	L1D->Description();
-	printf("-----------------\n");
-	L2->Description();
-	printf("-----------------\n");
-	printf("===== Main Memory =====\n");
-	MEM->Description();
-	printf("-----------------\n");
+void ApproximateHierarchy::description(FILE * out){
+	fprintf(out,"#### DESCRIPTION ######\n");
+	fprintf(out,"Approximate Hierarchy\n");
+	fprintf(out,"===== Caches =====\n");
+	L1I->Description(out);
+	fprintf(out,"-----------------\n");
+	L1D->Description(out);
+	fprintf(out,"-----------------\n");
+	L2->Description(out);
+	fprintf(out,"-----------------\n");
+	fprintf(out,"===== Main Memory =====\n");
+	MEM->Description(out);
+	fprintf(out,"-----------------\n");
 }

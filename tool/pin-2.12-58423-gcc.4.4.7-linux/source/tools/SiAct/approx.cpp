@@ -58,11 +58,11 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::updateApproxStats(BOOL isapprox
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::printApproxStats(){
+void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::printApproxStats(FILE * out){
 	float frac_approx = static_cast<float>(acache_stats.TOTAL_APPROX_ACCESSES)/(acache_stats.TOTAL_APPROX_ACCESSES+acache_stats.TOTAL_PRECISE_ACCESSES);
-	printf("Approximate Accesses: %ld\n", acache_stats.TOTAL_APPROX_ACCESSES);
-	printf("Precise Accesses: %ld\n", acache_stats.TOTAL_PRECISE_ACCESSES);
-	printf("Percent Approximate Accesses: %f%%\n", frac_approx*100.0);
+	fprintf(out,"Approximate Accesses: %ld\n", acache_stats.TOTAL_APPROX_ACCESSES);
+	fprintf(out,"Precise Accesses: %ld\n", acache_stats.TOTAL_PRECISE_ACCESSES);
+	fprintf(out,"Percent Approximate Accesses: %f%%\n", frac_approx*100.0);
 	float TOTAL_APPROX_LINES = 0;
 	float TOTAL_PRECISE_LINES = 0;
 	for(int i=0; i < NumSets(); i++){
@@ -72,22 +72,22 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::printApproxStats(){
 	frac_approx = TOTAL_APPROX_LINES/(TOTAL_APPROX_LINES + TOTAL_PRECISE_LINES);
 	TOTAL_APPROX_LINES /= static_cast<float>(acache_stats.N);
 	TOTAL_PRECISE_LINES /= static_cast<float>(acache_stats.N);
-	printf("Percent Approximate Lines: %f%%\n", frac_approx*100.0);
+	fprintf(out,"Percent Approximate Lines: %f%%\n", frac_approx*100.0);
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(){
-	printf("CACHE %s\n", this->Name().c_str());
-	printf("Line Size: %d\n", this->LineSize());
-	printf("Cache Size: %d\n", this->CacheSize());
-	printf("Associativity: %d\n", this->Associativity());
+void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Description(FILE * out){
+	fprintf(out,"CACHE %s\n", this->Name().c_str());
+	fprintf(out,"Line Size: %d\n", this->LineSize());
+	fprintf(out,"Cache Size: %d\n", this->CacheSize());
+	fprintf(out,"Associativity: %d\n", this->Associativity());
 	switch(model){
-		case CacheModelMedium: printf("Model: %s\n", "Medium"); break;
-		case CacheModelHeavy: printf("Model: %s\n", "Heavy"); break;
-		case CacheModelNone: printf("Model: %s\n", "None"); break;
+		case CacheModelMedium: fprintf(out,"Model: %s\n", "Medium"); break;
+		case CacheModelHeavy: fprintf(out,"Model: %s\n", "Heavy"); break;
+		case CacheModelNone: fprintf(out,"Model: %s\n", "None"); break;
 	}
-	printf("Perr(READ) = %e\n", static_cast<float>(ERR_PROB[ACCESS_TYPE_LOAD])/RGEN_MAX );
-	printf("Perr(WRITE) = %e\n", static_cast<float>(ERR_PROB[ACCESS_TYPE_STORE])/RGEN_MAX );
+	fprintf(out,"Perr(READ) = %e\n", static_cast<float>(ERR_PROB[ACCESS_TYPE_LOAD])/RGEN_MAX );
+	fprintf(out,"Perr(WRITE) = %e\n", static_cast<float>(ERR_PROB[ACCESS_TYPE_STORE])/RGEN_MAX );
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
@@ -167,25 +167,27 @@ template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	UINT32 PROB = ERR_PROB[accessType];
 	if(xorshift32() < PROB){
+			printf("corrupt %d ", data[0]);
 			UINT64 mask = xorshift64();
 			PIN_SafeCopy(data, &mask, size);
+			printf("-> %d\n", data[0]);
 	}
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(){
-	printf("%s\n", this->StatsLong("",CACHE_TYPE_DCACHE).c_str());
-	printApproxStats();
+void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(FILE * out){
+	fprintf(out,"%s\n", this->StatsLong("",CACHE_TYPE_DCACHE).c_str());
+	printApproxStats(out);
 }
 
 APPROXMEMORY::APPROXMEMORY(ApproximateMemoryModel model){
 	
 }
-void APPROXMEMORY::Report(){
-	
+void APPROXMEMORY::Report(FILE * out){
+	fprintf(out,"Approximate Memory\n");
 }
-void APPROXMEMORY::Description(){
-	printf("Approximate Memory\n");
+void APPROXMEMORY::Description(FILE * out){
+	fprintf(out,"Approximate Memory\n");
 }
 
 template class APPROX_CACHE_LRU(16*KILO, 64, STORE_ALLOCATE);

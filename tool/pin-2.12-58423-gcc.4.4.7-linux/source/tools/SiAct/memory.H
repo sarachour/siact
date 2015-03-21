@@ -22,7 +22,9 @@ class MEMORY_BASE {
 };
 
 class MEMORY : public MEMORY_BASE {
-	
+	public:
+		void Report(FILE * out);
+		void Description(FILE * out);
 };
 extern "C" {
 	VOID mem_urel_alloc(UINT64 address, UINT32 length);

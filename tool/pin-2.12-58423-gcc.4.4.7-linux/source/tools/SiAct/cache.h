@@ -112,8 +112,8 @@ class CACHE : public CACHE_BASE
     /// Cache access at addr that does not span cache lines
     bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType);
     void ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
-    void Report();
-    void Description();
+    void Report(FILE * out);
+    void Description(FILE * out);
 };
 
 /*!

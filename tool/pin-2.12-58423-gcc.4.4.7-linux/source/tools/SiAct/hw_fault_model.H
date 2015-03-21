@@ -67,10 +67,10 @@ KNOB<INT> KnobGlobalSeed (KNOB_MODE_WRITEONCE, "pintool", "s", "0", "Set global 
 
 void print_hardware_fault_model(FILE * out){
   fprintf(out, "Hardware Fault Model Info\n");
-  fprintf(out, "idx: %d, seed: %d\n", model.idx, model.srand);
-  if(model.mem->hasFirst()) model.mem->first()->description(); 
-  else model.mem->second()->description();
-
+  fprintf(out, "INDEX: %d\nSEED: %d\n", model.idx, model.srand);
+  if(model.mem->hasFirst()) model.mem->first()->description(out); 
+  else model.mem->second()->description(out);
+	fprintf(out, "------------------");
 }
 
 VOID setRGENSeed(){

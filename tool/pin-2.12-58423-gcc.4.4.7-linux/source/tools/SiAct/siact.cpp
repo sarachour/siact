@@ -243,10 +243,10 @@ VOID Fini(int, VOID * v)
 
     out = fopen(filename.c_str(), "w");
 	print_all(out);
-	if(memory->hasFirst()) memory->first()->report();
-	else memory->second()->report();
+	if(memory->hasFirst()) memory->first()->report(out);
+	else if(memory->hasSecond()) memory->second()->report(out);
 	fclose(out);
-
+	printf("Finished Outputting\n");
 
 }
 
