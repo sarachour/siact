@@ -56,18 +56,18 @@ Total-Misses:               149    0.02%
 Total-Accesses:          700969  100.00%
 
 
-Approximate Accesses: 700977
-Precise Accesses: 0
-Percent Approximate Accesses: 100.000000%
-Percent Approximate Lines: 0.000000%
+Approximate Accesses: 300002
+Precise Accesses: 400975
+Percent Approximate Accesses: 42.797697%
+Percent Approximate Lines: 99.999994%
 -----------------
 L2:
-Load-Hits:                   47   44.76%
-Load-Misses:                 58   55.24%
+Load-Hits:                   48   45.71%
+Load-Misses:                 57   54.29%
 Load-Accesses:              105  100.00%
 
-Store-Hits:                  33   75.00%
-Store-Misses:                11   25.00%
+Store-Hits:                  32   72.73%
+Store-Misses:                12   27.27%
 Store-Accesses:              44  100.00%
 
 Total-Hits:                  80   53.69%
@@ -75,11 +75,19 @@ Total-Misses:                69   46.31%
 Total-Accesses:             149  100.00%
 
 
-Approximate Accesses: 149
-Precise Accesses: 0
-Percent Approximate Accesses: 100.000000%
-Percent Approximate Lines: 0.000000%
+Approximate Accesses: 0
+Precise Accesses: 149
+Percent Approximate Accesses: 0.000000%
+Percent Approximate Lines: 100.000000%
 -----------------
 ===== Main Memory =====
 Approximate Memory
+Number Reads: 57
+Number Writes: 12
+Number Corruptions: 0
+Number Refreshes: 0
+Number FUll Refreshes: 0
+Min DRAM Refresh Rate: 0.000000 msec
+Max DRAM Refresh Rate: 0.000000 msec
+Avg DRAM Refresh Rate: -nan msec
 -----------------

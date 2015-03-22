@@ -17,10 +17,10 @@ class MEMORY_ADDR_RANGES {
 	typedef struct {
 		UINT64 start; //start of range
 		UINT64 end; //end of range
-		UINT64 msec; //time since last refresh
+		float msec; //time since last refresh
 	} addr_range_t;
 	std::vector<addr_range_t> addrs;
-		UINT32 find(UINT64 addr);
+	int find(UINT64 addr);
 	void init_stats();
 	void update_stats(float latency);
 	void print_stats(FILE * out);
@@ -31,8 +31,8 @@ class MEMORY_ADDR_RANGES {
 		bool contains(UINT64 addr);
 		void refresh_all();
 		void refresh(UINT64 addr); //refresh address
-		void accumulate(UINT64 msec); //accumulate all ranges
-		UINT64 elapsed(UINT64 addr);
+		void accumulate(float msec); //accumulate all ranges
+		float elapsed(UINT64 addr);
 		void report(FILE * out);
 };
 

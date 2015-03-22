@@ -240,12 +240,12 @@ void APPROXMEMORY::Accumulate(float msec){
 }
 void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	if(accessType == ACCESS_TYPE_LOAD){
-		UINT64 msec = this->regions->elapsed(addr);
+		float msec = this->regions->elapsed(addr);
 		updateMemoryStatsReads(true);
 		if(model == MemoryModelStatic){
 			UINT32 PROB = RAND_MAX*0.0000003*pow(msec,2.6908); // per bit flip probability
 			//
-			printf("Base Probability: %e\n",0.0000003*pow(msec,2.6908));
+			printf("P(e)=%e, t=%f, isurel=%s\n",0.0000003*pow(msec,2.6908), msec, this->regions->contains(addr) ? "y" : "n");
 			for(UINT32 byte = 0 ; byte < size; byte++){
 				for(UINT32 bit = 0; bit < 8; bit++){
 					if(xorshift32() < PROB){

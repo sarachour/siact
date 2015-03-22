@@ -57,7 +57,7 @@ void MEMORY_ADDR_RANGES::undef(UINT64 addr){
 			
 	}
 }
-UINT32 MEMORY_ADDR_RANGES::find(UINT64 addr){
+int MEMORY_ADDR_RANGES::find(UINT64 addr){
 	for(uint32_t i=0; i < addrs.size(); i++){
 		if(addrs[i].start <= addr && addrs[i].end > addr) return i;
 	}
@@ -81,14 +81,15 @@ void MEMORY_ADDR_RANGES::refresh(UINT64 addr){
 		addrs[idx].msec = 0;
 	}
 }
-void MEMORY_ADDR_RANGES::accumulate(UINT64 msec){
+void MEMORY_ADDR_RANGES::accumulate(float msec){
 	for(uint32_t i=0; i < addrs.size(); i++){
 		addrs[i].msec += msec;
 	}
 }
-UINT64 MEMORY_ADDR_RANGES::elapsed(UINT64 addr){
+float MEMORY_ADDR_RANGES::elapsed(UINT64 addr){
 	int idx = find(addr);
 	if(idx >= 0){
+		printf("FOUND ADDRESS %f\n", addrs[idx].msec);
 		return addrs[idx].msec;
 	}
 	return 0;

@@ -262,7 +262,6 @@ INSTLIB::ALARM_ICOUNT CYCLE_ALARM;
 VOID TIMER_CALLBACK(VOID * val, CONTEXT * ctxt, VOID * ip, THREADID tid){
 			INSTLIB::ALARM_ICOUNT * al = static_cast<INSTLIB::ALARM_ICOUNT*>(val);
 			if(memory != 0 && memory->hasSecond()){
-				printf("ELAPSED\n");
 				memory->second()->elapsed(0.001); //one msec has elapsed
 			}
 			al->SetAlarm(INSTRUCTIONS_PER_MICROSECOND, TIMER_CALLBACK, &CYCLE_ALARM);
