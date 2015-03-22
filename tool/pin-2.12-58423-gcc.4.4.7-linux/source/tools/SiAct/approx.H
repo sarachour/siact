@@ -67,10 +67,18 @@ class APPROXMEMORY : public MEMORY_BASE {
 			UINT64 NCORRUPTIONS;
 		} memory_stats_t;
 		//2*4 Byte Combo Map - neighbors on row-row and word-word
-		float weights[16];
+		float spatial[8];
+		UINT32 masks[8];
+		memory_stats_t stats;
+		MEMORY_ADDR_RANGES * regions;
+		ApproximateMemoryModel model;
+		void initMemoryStats();
+		void updateMemoryStatsReads(bool isread);
+		void updateMemoryStatsCorruption();
+		void printMemoryStats(FILE * out);
 	public:
-		APPROXMEMORY(ApproximateMemoryModel model);
-		void ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
+		APPROXMEMORY(ApproximateMemoryModel model, MEMORY_ADDR_RANGES * regions);
+		void ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
 		void Report(FILE * out);
 		void Description(FILE * out);
 		void Refresh();

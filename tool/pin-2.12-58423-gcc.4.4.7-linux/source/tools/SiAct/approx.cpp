@@ -167,10 +167,10 @@ template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	UINT32 PROB = ERR_PROB[accessType];
 	if(xorshift32() < PROB){
-			printf("corrupt %d ", data[0]);
+			printf("corrupt(%d) %ld ", size, ((UINT64*) data)[0]);
 			UINT64 mask = xorshift64();
 			PIN_SafeCopy(data, &mask, size);
-			printf("-> %d\n", data[0]);
+			printf("-> %ld\n", ((UINT64*) data)[0]);
 	}
 }
 
@@ -181,23 +181,111 @@ void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::Report(FILE * out){
 }
 
 
+#define cell(l,c,r) l*0b100 + c*0b010 + r*0b001
 
-APPROXMEMORY::APPROXMEMORY(ApproximateMemoryModel model){
-	
+void APPROXMEMORY::initMemoryStats(){
+	stats.NREADS = 0;
+	stats.NWRITES = 0;
+	stats.NCORRUPTIONS = 0;
 }
+void APPROXMEMORY::updateMemoryStatsReads(bool isread){
+		if(isread) stats.NREADS++;
+		else stats.NWRITES++;
+}
+void APPROXMEMORY::updateMemoryStatsCorruption(){
+		stats.NCORRUPTIONS++;
+}
+
+void APPROXMEMORY::printMemoryStats(FILE * out){
+	fprintf(out, "Number Reads: %ld\n", stats.NREADS);
+	fprintf(out, "Number Writes: %ld\n", stats.NWRITES);
+	fprintf(out, "Number Corruptions: %ld\n", stats.NCORRUPTIONS);
+	this->regions->report(out);
+}
+
+APPROXMEMORY::APPROXMEMORY(ApproximateMemoryModel model, MEMORY_ADDR_RANGES * regions){
+	this->regions = regions;
+	this->model = model;
+	UINT32 init = 0b00000001;
+	for(int i=0; i < 8; i++){
+		this->masks[i] = init << i;
+	}
+	/* FROM the paper: A Mechanism for Dependence on Data Pattern in DRAM
+	 * 7 -> 4 AU when going from uniform values (all 1's) to a 
+	 */
+	//best scenario
+	this->spatial[cell(0,0,0)] = 
+	this->spatial[cell(1,1,1)] = 1.0;
+	
+	//middling scenario
+	this->spatial[cell(0,0,1)] = 
+	this->spatial[cell(1,0,0)] = 
+	this->spatial[cell(1,1,0)] = 
+	this->spatial[cell(0,1,1)] = (1.0+7/4.5)/2.0;
+	
+	//worst scenario
+	this->spatial[cell(0,1,0)] =
+	this->spatial[cell(1,0,1)] = 7/4.5;
+	
+	this->initMemoryStats();
+}	
+
 
 void APPROXMEMORY::Refresh(){
 	printf("Refresh Memory\n");
+	this->regions->refresh_all();
 }
 void APPROXMEMORY::Accumulate(UINT64 msec){
-	printf("Accumulate Memory\n");
+	this->regions->accumulate(msec);
 }
-void APPROXMEMORY::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
-	
+void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
+	if(accessType == ACCESS_TYPE_LOAD){
+		UINT64 msec = this->regions->elapsed(addr);
+		updateMemoryStatsReads(true);
+		if(model == MemoryModelStatic){
+			UINT32 PROB = RAND_MAX*0.0000003*pow(msec,2.6908); // per bit flip probability
+			//
+			printf("Base Probability: %e\n",0.0000003*pow(msec,2.6908));
+			for(UINT32 byte = 0 ; byte < size; byte++){
+				for(UINT32 bit = 0; bit < 8; bit++){
+					if(xorshift32() < PROB){
+						printf("corrupt bit\n");
+						data[byte]^=masks[bit];
+						stats.NCORRUPTIONS++;
+					}
+				}
+			}
+		}
+		else if(model == MemoryModelDynamic){ //per byte error probability
+			UINT32 PROB = RAND_MAX*0.0000003*pow(msec,2.6908); // per bit flip probability - double check
+			UINT8 last_bit;
+			UINT8 next_bit;
+			UINT8 curr_bit;
+			for(UINT32 byte = 0 ; byte < size; byte++){
+				last_bit = 0;
+				for(UINT32 bit = 0; bit < 7; bit++){
+					next_bit = (data[byte]&masks[bit+1])>>(bit+1);
+					curr_bit = (data[byte]&masks[bit])>>(bit);
+					printf("bits: %d %d %d\n",last_bit, next_bit, curr_bit);
+					if(xorshift32() < PROB*spatial[cell(last_bit,curr_bit,next_bit)]){
+						printf("corrupt bit\n");
+						data[byte]^=masks[bit];
+						stats.NCORRUPTIONS++;
+					}
+					last_bit = curr_bit;
+				}
+			}
+		}
+		updateMemoryStatsReads(false);
+	}
+	else if(accessType == ACCESS_TYPE_STORE){
+		this->regions->refresh(addr);
+	}
 }
 
 void APPROXMEMORY::Report(FILE * out){
 	fprintf(out,"Approximate Memory\n");
+	this->printMemoryStats(out);
 }
 void APPROXMEMORY::Description(FILE * out){
 	fprintf(out,"Approximate Memory\n");

@@ -69,7 +69,7 @@ ApproximateHierarchy::ApproximateHierarchy(UINT32 l1i_cachesize, UINT32 l1i_line
 	L1I = new CACHE_LRU(16 * KILO, 64, STORE_ALLOCATE)("L1I",l1i_cachesize, l1i_linesize, l1i_assoc);
 	L1D = new APPROX_CACHE_LRU(16 * KILO, 64, STORE_ALLOCATE)("L1D",l1d_cachesize, l1d_linesize, l1d_assoc, L1m);
 	L2 = new APPROX_CACHE_LRU(64 * KILO, 64, STORE_ALLOCATE)("L2",l2_cachesize, l2_linesize, l2_assoc, L2m);
-	MEM = new APPROXMEMORY(Mm);
+	MEM = new APPROXMEMORY(Mm, &RANGES);
 }
 void ApproximateHierarchy::load(ADDRINT addr, UINT8 * data, UINT32 size, BOOL approx, BOOL& is_transient_error){
 	bool APPROX_SET = approx;
@@ -85,7 +85,7 @@ void ApproximateHierarchy::load(ADDRINT addr, UINT8 * data, UINT32 size, BOOL ap
 			L2->ProcessData(data, size, ACCESS_TYPE_LOAD);
 		}
 		else if(!L2_HIT){
-			MEM->ProcessData(data,size,ACCESS_TYPE_LOAD);
+			MEM->ProcessData(addr,data,size,ACCESS_TYPE_LOAD);
 		}
 	}
 }
@@ -104,7 +104,7 @@ void ApproximateHierarchy::store(ADDRINT addr, UINT8 * data, UINT32 size, BOOL a
 			L2->ProcessData(data, size, ACCESS_TYPE_STORE);
 		}
 		else if(!L2_HIT){
-			MEM->ProcessData(data,size,ACCESS_TYPE_STORE);
+			MEM->ProcessData(addr,data,size,ACCESS_TYPE_STORE);
 			//TODO
 		}
 	}
