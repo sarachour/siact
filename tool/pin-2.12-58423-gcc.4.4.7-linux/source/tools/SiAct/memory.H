@@ -7,9 +7,9 @@ class MEMORY_ADDR_RANGES {
 	typedef struct {
 		UINT64 N_REFRESHES;
 		UINT64 N_FORCE_REFRESHES;
-		UINT64 DRAM_LATENCY_SUM;
-		UINT64 MAX_DRAM_LATENCY;
-		UINT64 MIN_DRAM_LATENCY;
+		float DRAM_LATENCY_SUM;
+		float MAX_DRAM_LATENCY;
+		float MIN_DRAM_LATENCY;
 	} region_stats_t;
 	
 	region_stats_t stats;
@@ -22,7 +22,7 @@ class MEMORY_ADDR_RANGES {
 	std::vector<addr_range_t> addrs;
 		UINT32 find(UINT64 addr);
 	void init_stats();
-	void update_stats(UINT64 latency);
+	void update_stats(float latency);
 	void print_stats(FILE * out);
 	public:
 		MEMORY_ADDR_RANGES();

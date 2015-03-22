@@ -133,7 +133,7 @@ void ApproximateHierarchy::report(FILE * out){
 	MEM->Report(out);
 	fprintf(out,"-----------------\n");
 }
-void ApproximateHierarchy::elapsed(UINT64 msec){
+void ApproximateHierarchy::elapsed(float msec){
 	MEM->Accumulate(msec);
 }
 void ApproximateHierarchy::description(FILE * out){

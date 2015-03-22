@@ -41,7 +41,7 @@ class ApproximateHierarchy {
 		 void alloc(ADDRINT data, UINT32 size, BOOL approx);
 		 bool approx(ADDRINT data);
 		 void report(FILE * out);
-		 void elapsed(UINT64 msec);
+		 void elapsed(float msec);
 		 void refresh();
 		 void description(FILE * out);
 };

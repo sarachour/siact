@@ -235,7 +235,7 @@ void APPROXMEMORY::Refresh(){
 	printf("Refresh Memory\n");
 	this->regions->refresh_all();
 }
-void APPROXMEMORY::Accumulate(UINT64 msec){
+void APPROXMEMORY::Accumulate(float msec){
 	this->regions->accumulate(msec);
 }
 void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
@@ -276,10 +276,10 @@ void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_T
 				}
 			}
 		}
-		updateMemoryStatsReads(false);
 	}
 	else if(accessType == ACCESS_TYPE_STORE){
 		this->regions->refresh(addr);
+		updateMemoryStatsReads(false);
 	}
 }
 

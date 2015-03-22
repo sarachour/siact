@@ -82,7 +82,7 @@ class APPROXMEMORY : public MEMORY_BASE {
 		void Report(FILE * out);
 		void Description(FILE * out);
 		void Refresh();
-		void Accumulate(UINT64 msec);
+		void Accumulate(float msec);
 	
 };
 #endif

@@ -15,7 +15,7 @@ void MEMORY_ADDR_RANGES::init_stats(){
 	stats.N_FORCE_REFRESHES = 0;
 	stats.N_REFRESHES = 0;
 }
-void MEMORY_ADDR_RANGES::update_stats(UINT64 latency){
+void MEMORY_ADDR_RANGES::update_stats(float latency){
 	if(stats.N_REFRESHES == 0){
 		stats.MAX_DRAM_LATENCY = stats.MIN_DRAM_LATENCY = latency;
 	}
@@ -27,9 +27,9 @@ void MEMORY_ADDR_RANGES::update_stats(UINT64 latency){
 void MEMORY_ADDR_RANGES::print_stats(FILE * out){
 	fprintf(out,"Number Refreshes: %ld\n", stats.N_REFRESHES);
 	fprintf(out,"Number FUll Refreshes: %ld\n", stats.N_FORCE_REFRESHES);
-	fprintf(out,"Min DRAM Refresh Rate: %ld msec\n", stats.MIN_DRAM_LATENCY);
-	fprintf(out,"Max DRAM Refresh Rate: %ld msec\n", stats.MAX_DRAM_LATENCY);
-	fprintf(out,"Avg DRAM Refresh Rate: %f msec\n", ((float)stats.DRAM_LATENCY_SUM)/stats.N_REFRESHES);
+	fprintf(out,"Min DRAM Refresh Rate: %f msec\n", stats.MIN_DRAM_LATENCY);
+	fprintf(out,"Max DRAM Refresh Rate: %f msec\n", stats.MAX_DRAM_LATENCY);
+	fprintf(out,"Avg DRAM Refresh Rate: %f msec\n", (stats.DRAM_LATENCY_SUM)/stats.N_REFRESHES);
 }
 
 
@@ -37,8 +37,6 @@ void MEMORY_ADDR_RANGES::print_stats(FILE * out){
 VOID mem_urel_alloc(UINT64 address, UINT32 length){
 	if(memory->hasSecond())
 		memory->second()->alloc(address, length, true);
-	else
-		printf("[UMEM|ERROR] Failed to allocate. Approximate machine not used.\n");
 }
 
 void MEMORY_ADDR_RANGES::report(FILE * out){
