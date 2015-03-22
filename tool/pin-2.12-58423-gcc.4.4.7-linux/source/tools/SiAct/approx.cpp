@@ -167,10 +167,8 @@ template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
 void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	UINT32 PROB = ERR_PROB[accessType];
 	if(xorshift32() < PROB){
-			printf("corrupt(%d) %ld ", size, ((UINT64*) data)[0]);
 			UINT64 mask = xorshift64();
 			PIN_SafeCopy(data, &mask, size);
-			printf("-> %ld\n", ((UINT64*) data)[0]);
 	}
 }
 
@@ -240,11 +238,14 @@ void APPROXMEMORY::Accumulate(float msec){
 }
 void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	if(accessType == ACCESS_TYPE_LOAD){
-		float msec = this->regions->elapsed(addr);
+		//if this address is not unreliable, ignore
 		updateMemoryStatsReads(true);
+		if(!this->regions->contains(addr)) return;
+		
+		//get compute msecs since last refresh
+		float msec = this->regions->elapsed(addr);
 		if(model == MemoryModelStatic){
 			UINT32 PROB = RAND_MAX*0.0000003*pow(msec,2.6908); // per bit flip probability
-			//
 			printf("P(e)=%e, t=%f, isurel=%s\n",0.0000003*pow(msec,2.6908), msec, this->regions->contains(addr) ? "y" : "n");
 			for(UINT32 byte = 0 ; byte < size; byte++){
 				for(UINT32 bit = 0; bit < 8; bit++){
