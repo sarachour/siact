@@ -85,7 +85,8 @@ void ApproximateHierarchy::load(ADDRINT addr, UINT8 * data, UINT32 size, BOOL ap
 			L2->ProcessData(data, size, ACCESS_TYPE_LOAD);
 		}
 		else if(!L2_HIT){
-			MEM->ProcessData(addr,data,size,ACCESS_TYPE_LOAD);
+			//if there were errors injected, than the error is not transient (false)
+			is_transient_error = !MEM->ProcessData(addr,data,size,ACCESS_TYPE_LOAD);
 		}
 	}
 }
@@ -104,7 +105,7 @@ void ApproximateHierarchy::store(ADDRINT addr, UINT8 * data, UINT32 size, BOOL a
 			L2->ProcessData(data, size, ACCESS_TYPE_STORE);
 		}
 		else if(!L2_HIT){
-			MEM->ProcessData(addr,data,size,ACCESS_TYPE_STORE);
+			!MEM->ProcessData(addr,data,size,ACCESS_TYPE_STORE);
 			//TODO
 		}
 	}

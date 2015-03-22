@@ -11,9 +11,10 @@ extern Tuple<PreciseHierarchy,ApproximateHierarchy> * memory;
 PreciseHierarchy * precise_mem=0;
 ApproximateHierarchy * approx_mem=0;
 
-ADDRINT * MEMADDR = 0;
-UINT64 MEMADDR_DATA;
+ADDRINT MEMADDR_DEST = 0;
+UINT64 MEMADDR_SRC;
 UINT32 MEMADDR_SIZE = 0;
+BOOL TRANSIENT_ERROR = false;
 
 VOID PIN_FAST_ANALYSIS_CALL siPrecLoadMem(ADDRINT * addrptr, UINT32 size){
 	ADDRINT addr = (ADDRINT) addrptr;
@@ -32,23 +33,26 @@ VOID PIN_FAST_ANALYSIS_CALL siPrecStoreMem(ADDRINT * addrptr, UINT32 size){
 VOID PIN_FAST_ANALYSIS_CALL siApproxLoadMem(ADDRINT * addrptr, UINT32 size){
 	ADDRINT addr = (ADDRINT) addrptr;
 	BOOL DO_APPROX = approx_mem->approx(addr);
-	BOOL TRANSIENT_ERROR;
 	UINT64 data;
 	
-	//PIN_SafeCopy(MEMADDR, &MEMADDR_DATA,MEMADDR_SIZE); //restore load
+	//restore data from last read
+	/*
+	if(TRANSIENT_ERROR){
+		PIN_SafeCopy((void*) MEMADDR_DEST, &MEMADDR_SRC,MEMADDR_SIZE); //restore load
+	}
+	*/
+	
 	PIN_SafeCopy(&data,(void *) addr, size);
 	
-	//MEMADDR = addrptr;
-	//MEMADDR_DATA = data;
-	//MEMADDR_SIZE = size;
+	MEMADDR_DEST = addr;
+	MEMADDR_SRC = data;
+	MEMADDR_SIZE = size;
 	
 	//printf("load addr=%lx size=%d data=%lx\n", addr, size, data);
 	approx_mem->load(addr,reinterpret_cast<UINT8*>(&data), size, DO_APPROX, TRANSIENT_ERROR);
-	if(!TRANSIENT_ERROR) MEMADDR = 0;
 	
 	//if(DO_APPROX) 
 	PIN_SafeCopy((void *) addr, &data, size);
-	//printf("----\n");
 }
 VOID PIN_FAST_ANALYSIS_CALL siApproxStoreMem(ADDRINT * addrptr, UINT32 size){
 	ADDRINT addr = (ADDRINT) addrptr;

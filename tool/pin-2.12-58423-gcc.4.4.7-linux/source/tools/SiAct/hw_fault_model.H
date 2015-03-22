@@ -145,7 +145,7 @@ void readHardwareFaultModelFile(){
 			  if(streq(dramtype, "static")){
 				  memmodel = MemoryModelStatic;
 			  }
-			  else if(streq(sramtype, "dynamic")){
+			  else if(streq(dramtype, "dynamic")){
 				  memmodel = MemoryModelDynamic;
 			  }
 			  else {

@@ -78,7 +78,7 @@ class APPROXMEMORY : public MEMORY_BASE {
 		void printMemoryStats(FILE * out);
 	public:
 		APPROXMEMORY(ApproximateMemoryModel model, MEMORY_ADDR_RANGES * regions);
-		void ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
+		bool ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
 		void Report(FILE * out);
 		void Description(FILE * out);
 		void Refresh();

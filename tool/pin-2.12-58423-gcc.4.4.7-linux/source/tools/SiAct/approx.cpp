@@ -236,23 +236,26 @@ void APPROXMEMORY::Refresh(){
 void APPROXMEMORY::Accumulate(float msec){
 	this->regions->accumulate(msec);
 }
-void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
+//return if errors were injected
+bool APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
+	uint32_t ncorruptions = 0;
 	if(accessType == ACCESS_TYPE_LOAD){
 		//if this address is not unreliable, ignore
 		updateMemoryStatsReads(true);
-		if(!this->regions->contains(addr)) return;
+		if(!this->regions->contains(addr)) return false;
 		
 		//get compute msecs since last refresh
 		float msec = this->regions->elapsed(addr);
 		if(model == MemoryModelStatic){
 			UINT32 PROB = RAND_MAX*0.0000003*pow(msec,2.6908); // per bit flip probability
-			printf("P(e)=%e, t=%f, isurel=%s\n",0.0000003*pow(msec,2.6908), msec, this->regions->contains(addr) ? "y" : "n");
+			//printf("P(e)=%e, t=%f, isurel=%s\n",0.0000003*pow(msec,2.6908), msec, this->regions->contains(addr) ? "y" : "n");
 			for(UINT32 byte = 0 ; byte < size; byte++){
 				for(UINT32 bit = 0; bit < 8; bit++){
 					if(xorshift32() < PROB){
-						printf("corrupt bit\n");
+						//printf("corrupt bit\n");
 						data[byte]^=masks[bit];
 						stats.NCORRUPTIONS++;
+						ncorruptions++;
 					}
 				}
 			}
@@ -272,6 +275,7 @@ void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_T
 						printf("corrupt bit\n");
 						data[byte]^=masks[bit];
 						stats.NCORRUPTIONS++;
+						ncorruptions++;
 					}
 					last_bit = curr_bit;
 				}
@@ -282,6 +286,7 @@ void APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_T
 		this->regions->refresh(addr);
 		updateMemoryStatsReads(false);
 	}
+	return (ncorruptions > 0);
 }
 
 void APPROXMEMORY::Report(FILE * out){
@@ -290,6 +295,11 @@ void APPROXMEMORY::Report(FILE * out){
 }
 void APPROXMEMORY::Description(FILE * out){
 	fprintf(out,"Approximate Memory\n");
+	switch(model){
+		case MemoryModelDynamic: fprintf(out, "Model: Dynamic\n"); break;
+		case MemoryModelStatic: fprintf(out, "Model: Static\n"); break;
+		case MemoryModelNone: fprintf(out, "Model: None\n"); break;
+	}
 }
 
 template class APPROX_CACHE_LRU(16*KILO, 64, STORE_ALLOCATE);
