@@ -44,7 +44,7 @@ void MEMORY_ADDR_RANGES::report(FILE * out){
 	for(uint32_t i=0; i < addrs.size(); i++){
 		UREL_DATA_AMT += addrs[i].end - addrs[i].start;
 	}
-	printf("Unreliable Data: %f KB", ((float) UREL_DATA_AMT)/1024);
+	fprintf(out,"Unreliable Data: %f KB\n", ((float) UREL_DATA_AMT)/1024);
 	print_stats(out);
 }
 #define MAX_RANGE_SIZE 16

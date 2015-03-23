@@ -252,7 +252,6 @@ bool APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_T
 			for(UINT32 byte = 0 ; byte < size; byte++){
 				for(UINT32 bit = 0; bit < 8; bit++){
 					if(xorshift32() < PROB){
-						//printf("corrupt bit\n");
 						data[byte]^=masks[bit];
 						stats.NCORRUPTIONS++;
 						ncorruptions++;
@@ -262,17 +261,19 @@ bool APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_T
 		}
 		else if(model == MemoryModelDynamic){ //per byte error probability
 			UINT32 PROB = RAND_MAX*0.0000003*pow(msec,2.6908); // per bit flip probability - double check
-			UINT8 last_bit;
-			UINT8 next_bit;
+			UINT8 last_bit=0;
+			UINT8 next_bit=0;
 			UINT8 curr_bit;
 			for(UINT32 byte = 0 ; byte < size; byte++){
 				last_bit = 0;
-				for(UINT32 bit = 0; bit < 7; bit++){
-					next_bit = (data[byte]&masks[bit+1])>>(bit+1);
+				for(UINT32 bit = 0; bit < 8; bit++){
+					//update bits
+					if(bit < 7) next_bit = (data[byte]&masks[bit+1])>>(bit+1);
 					curr_bit = (data[byte]&masks[bit])>>(bit);
-					printf("bits: %d %d %d\n",last_bit, next_bit, curr_bit);
-					if(xorshift32() < PROB*spatial[cell(last_bit,curr_bit,next_bit)]){
-						printf("corrupt bit\n");
+					
+					//calculate new probability
+					UINT32 NPROB = PROB*spatial[cell(last_bit,curr_bit,next_bit)];
+					if(xorshift32() < NPROB){
 						data[byte]^=masks[bit];
 						stats.NCORRUPTIONS++;
 						ncorruptions++;
