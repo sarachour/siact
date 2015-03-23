@@ -164,12 +164,14 @@ bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::AccessSingleLine(ADDRINT addr, 
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>
-void APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
+bool APPROXCACHE<SET,MAX_SETS,STORE_ALLOCATION>::ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType){
 	UINT32 PROB = ERR_PROB[accessType];
 	if(xorshift32() < PROB){
 			UINT64 mask = xorshift64();
 			PIN_SafeCopy(data, &mask, size);
+			return true;
 	}
+	return false;
 }
 
 template <class SET, UINT32 MAX_SETS, UINT32 STORE_ALLOCATION>

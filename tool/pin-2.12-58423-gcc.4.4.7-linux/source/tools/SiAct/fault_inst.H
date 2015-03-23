@@ -11,7 +11,7 @@ extern Tuple<PreciseHierarchy,ApproximateHierarchy> * memory;
 PreciseHierarchy * precise_mem=0;
 ApproximateHierarchy * approx_mem=0;
 
-ADDRINT MEMADDR_DEST = 0;
+void* MEMADDR_DEST = 0;
 UINT64 MEMADDR_SRC;
 UINT32 MEMADDR_SIZE = 0;
 BOOL TRANSIENT_ERROR = false;
@@ -36,15 +36,15 @@ VOID PIN_FAST_ANALYSIS_CALL siApproxLoadMem(ADDRINT * addrptr, UINT32 size){
 	UINT64 data;
 	
 	//restore data from last read
-	/*
+	//transient error
 	if(TRANSIENT_ERROR){
 		PIN_SafeCopy((void*) MEMADDR_DEST, &MEMADDR_SRC,MEMADDR_SIZE); //restore load
 	}
-	*/
+	
 	
 	PIN_SafeCopy(&data,(void *) addr, size);
 	
-	MEMADDR_DEST = addr;
+	MEMADDR_DEST = addrptr;
 	MEMADDR_SRC = data;
 	MEMADDR_SIZE = size;
 	
