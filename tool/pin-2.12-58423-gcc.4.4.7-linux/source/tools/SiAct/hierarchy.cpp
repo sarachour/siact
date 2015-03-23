@@ -75,18 +75,20 @@ void ApproximateHierarchy::load(ADDRINT addr, UINT8 * data, UINT32 size, BOOL ap
 	bool APPROX_SET = approx;
 	bool APPROX_GET;
 	bool L1_HIT = L1D->Access(addr, size,ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
-	is_transient_error = true;
+	is_transient_error = false;
 	if(L1_HIT && APPROX_GET){
-		L1D->ProcessData(data, size, ACCESS_TYPE_LOAD);
+		//the error is transient if there was ana sram error
+		is_transient_error = is_transient_error || L1D->ProcessData(data, size, ACCESS_TYPE_LOAD);
 	}
 	else if(!L1_HIT){
 		bool L2_HIT = L2->Access(addr,size,ACCESS_TYPE_LOAD, APPROX_SET, APPROX_GET);
 		if(L2_HIT && APPROX_GET){
-			L2->ProcessData(data, size, ACCESS_TYPE_LOAD);
+			is_transient_error = is_transient_error || L2->ProcessData(data, size, ACCESS_TYPE_LOAD);
 		}
 		else if(!L2_HIT){
 			//if there were errors injected, than the error is not transient (false)
-			is_transient_error = !MEM->ProcessData(addr,data,size,ACCESS_TYPE_LOAD);
+			is_transient_error = false;
+			MEM->ProcessData(addr,data,size,ACCESS_TYPE_LOAD);
 		}
 	}
 }

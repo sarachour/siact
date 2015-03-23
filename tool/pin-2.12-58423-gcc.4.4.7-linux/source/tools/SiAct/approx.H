@@ -53,7 +53,7 @@ class APPROXCACHE : public CACHE_BASE{
 		bool Access(ADDRINT addr, UINT32 size, ACCESS_TYPE accessType, BOOL approx_set, BOOL& approx_get);
 		/// Cache access at addr that does not span cache lines
 		bool AccessSingleLine(ADDRINT addr, ACCESS_TYPE accessType, BOOL approx_set, BOOL& approx_get);
-		void ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
+		bool ProcessData(UINT8 * data, UINT32 size, ACCESS_TYPE accessType);
 		void Report(FILE * out);
 		void Description(FILE * out);
 };
