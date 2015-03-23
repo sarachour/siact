@@ -61,6 +61,10 @@ void pin_start_timer(int i);
 void pin_stop_timer(int i, pin_timer_info_t * t);
 void pin_print_timer(FILE * out, const char * name, pin_timer_info_t *t);
 
+#define DBLUREL(v) pin_mark_urel(&v, sizeof(double));
+#define DBLNUREL(v,n) pin_mark_urel(v, sizeof(double)*n);
+
+
 #define FPUREL(v) pin_mark_urel(&v, sizeof(float));
 #define FPNUREL(v,n) pin_mark_urel(v, sizeof(float)*n);
 
