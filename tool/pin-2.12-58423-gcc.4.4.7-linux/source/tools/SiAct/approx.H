@@ -67,7 +67,6 @@ class APPROXMEMORY : public MEMORY_BASE {
 			UINT64 NCORRUPTIONS;
 		} memory_stats_t;
 		//2*4 Byte Combo Map - neighbors on row-row and word-word
-		float spatial[8];
 		UINT32 masks[8];
 		memory_stats_t stats;
 		MEMORY_ADDR_RANGES * regions;
