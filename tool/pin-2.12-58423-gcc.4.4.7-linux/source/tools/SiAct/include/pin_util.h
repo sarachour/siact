@@ -1,7 +1,6 @@
 #ifndef PIN_UTIL_H
 #define PIN_UTIL_H
 #include "stdio.h"
-
 #include <stdint.h>
 typedef enum timer_label {
 	TOPAZ_TIMER=0, //topaz routines

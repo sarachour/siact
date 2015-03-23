@@ -5,7 +5,7 @@
 
 class MEMORY_ADDR_RANGES {
 	typedef struct {
-		UINT64 N_REFRESHES;
+		float N_REFRESHES;
 		UINT64 N_FORCE_REFRESHES;
 		float DRAM_LATENCY_SUM;
 		float MAX_DRAM_LATENCY;

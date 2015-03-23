@@ -25,7 +25,7 @@ void MEMORY_ADDR_RANGES::update_stats(float latency){
 	if(stats.MIN_DRAM_LATENCY > latency) stats.MIN_DRAM_LATENCY = latency;
 }
 void MEMORY_ADDR_RANGES::print_stats(FILE * out){
-	fprintf(out,"Number Refreshes: %ld\n", stats.N_REFRESHES);
+	fprintf(out,"Number Refreshes: %f\n", stats.N_REFRESHES);
 	fprintf(out,"Number Full Refreshes: %ld\n", stats.N_FORCE_REFRESHES);
 	fprintf(out,"Min DRAM Refresh Rate: %f msec\n", stats.MIN_DRAM_LATENCY);
 	fprintf(out,"Max DRAM Refresh Rate: %f msec\n", stats.MAX_DRAM_LATENCY);
@@ -96,7 +96,7 @@ void MEMORY_ADDR_RANGES::refresh(UINT64 addr){
 	}
 }
 void MEMORY_ADDR_RANGES::accumulate(float msec){
-	for(uint32_t i=0; i < addrs.size(); i++){
+	for(uint64_t i=0; i < addrs.size(); i++){
 		addrs[i].msec += msec;
 	}
 }
