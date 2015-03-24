@@ -280,7 +280,7 @@ bool APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_T
 			float PROB = TEMP*0.0000003*pow(msec,2.6908); // per bit flip probability - double check
 			UINT32 IPROB = PROB > 1 ? RAND_MAX : RAND_MAX*PROB; // per bit flip probability
 			
-			T+=1.0;
+			T+=0.00001;
 			if(IPROB == 0) return false;
 			
 			for(UINT32 byte = 0 ; byte < size; byte++){
