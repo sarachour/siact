@@ -19,7 +19,9 @@ typedef enum APPROXIMATE_CACHE_MODEL_T {
 typedef enum APPROXIMATE_MEMORY_MODEL_T{
 	MemoryModelStatic,
 	MemoryModelDynamic,
-	MemoryModelNone
+	MemoryModelNone,
+	MemoryModelTemp,
+	MemoryModelVariation
 } ApproximateMemoryModel;
 
 
@@ -69,6 +71,7 @@ class APPROXMEMORY : public MEMORY_BASE {
 		//2*4 Byte Combo Map - neighbors on row-row and word-word
 		UINT32 masks[8];
 		memory_stats_t stats;
+		float T;
 		MEMORY_ADDR_RANGES * regions;
 		ApproximateMemoryModel model;
 		void initMemoryStats();

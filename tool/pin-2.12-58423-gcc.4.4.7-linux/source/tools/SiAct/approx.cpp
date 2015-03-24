@@ -261,12 +261,46 @@ bool APPROXMEMORY::ProcessData(ADDRINT addr, UINT8 * data, UINT32 size, ACCESS_T
 					UINT8 shift = bit-1 < 0 ? 0 : bit-1;
 					UINT8 adj = (dbyte&(0b101<<shift))>>shift;
 					UINT8 sum = (adj>>2) + (adj&0b001);
-					float slope = val == 0 ? sum : 2 - sum;
+					float score = val == 0 ? sum : 2 - sum;
 					//7 - 4.5
-					slope = 1.0+slope/2.0*1.0;
+					float slope = 1.0+score/2.0*1.0;
 					float NPROB = PROB*slope;
 					float IPROB = NPROB > 1 ? RAND_MAX : RAND_MAX*NPROB;
+					ASSERTX(slope >= 1.0);
 					if(NPROB > 0 && xorshift32() < IPROB){
+						data[byte]^=masks[bit];
+						stats.NCORRUPTIONS++;
+						ncorruptions++;
+					}
+				}
+			}
+		}
+		else if(model == MemoryModelTemp){
+			float TEMP = -1.5*sin(T) + 2*cos(2*T) + 0.5*cos(1.5*T)*sin(3*T);
+			float PROB = TEMP*0.0000003*pow(msec,2.6908); // per bit flip probability - double check
+			UINT32 IPROB = PROB > 1 ? RAND_MAX : RAND_MAX*PROB; // per bit flip probability
+			
+			T+=1.0;
+			if(IPROB == 0) return false;
+			
+			for(UINT32 byte = 0 ; byte < size; byte++){
+				for(UINT32 bit = 0; bit < 8; bit++){
+					if(xorshift32() < IPROB){
+						data[byte]^=masks[bit];
+						stats.NCORRUPTIONS++;
+						ncorruptions++;
+					}
+				}
+			}
+		}
+		else if(model == MemoryModelVariation){
+			float TLOC = ((addr>>6)%512)/256.0;
+			float PROB = TLOC*0.0000003*pow(msec,2.6908); // per bit flip probability - double check
+			UINT32 IPROB = PROB > 1 ? RAND_MAX : RAND_MAX*PROB; // per bit flip probability
+			
+			for(UINT32 byte = 0 ; byte < size; byte++){
+				for(UINT32 bit = 0; bit < 8; bit++){
+					if(xorshift32() < IPROB){
 						data[byte]^=masks[bit];
 						stats.NCORRUPTIONS++;
 						ncorruptions++;
@@ -291,6 +325,8 @@ void APPROXMEMORY::Description(FILE * out){
 	switch(model){
 		case MemoryModelDynamic: fprintf(out, "Model: Dynamic\n"); break;
 		case MemoryModelStatic: fprintf(out, "Model: Static\n"); break;
+		case MemoryModelTemp: fprintf(out, "Model: Temp\n"); break;
+		case MemoryModelVariation: fprintf(out, "Model: Variation\n"); break;
 		case MemoryModelNone: fprintf(out, "Model: None\n"); break;
 	}
 }

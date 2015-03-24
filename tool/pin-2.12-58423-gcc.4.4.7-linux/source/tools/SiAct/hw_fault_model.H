@@ -148,6 +148,12 @@ void readHardwareFaultModelFile(){
 			  else if(streq(dramtype, "dynamic")){
 				  memmodel = MemoryModelDynamic;
 			  }
+			  else if(streq(dramtype, "variant")){
+				  memmodel = MemoryModelVariation;
+			  }
+			  else if(streq(dramtype, "temp")){
+				  memmodel = MemoryModelTemp;
+			  }
 			  else {
 				  memmodel = MemoryModelNone;
 			  }
