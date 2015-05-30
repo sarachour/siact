@@ -5,7 +5,7 @@
 #include "pin_profile.H"
 #include <vector>
 #include "fault_const.H"
-#include "xorshift.h"
+#include "xorshift.H"
 #include <map>
 #include "cache.H"
 #include "approx.H"

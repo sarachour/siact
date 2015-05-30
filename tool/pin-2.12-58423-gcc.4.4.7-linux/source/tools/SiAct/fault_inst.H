@@ -1,7 +1,7 @@
 #include "pin.H"
 #include "pin_profile.H"
 #include "fault_inject.H"
-#include "xed-decoded-inst.H"
+#include "xed-decoded-inst.h"
 #include "info.H"
 #include "hierarchy.H"
 

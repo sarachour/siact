@@ -1,4 +1,4 @@
-#include "strategy.h"
+#include "strategy.H"
 #include "hierarchy.H"
 #include "pin.H"
 #include "stdio.h"

@@ -1,9 +1,9 @@
 #ifndef APPROX_H
 #define APPROX_H
 
-#include "cache.h"
-#include "memory.h"
-#include "helper.h"
+#include "cache.H"
+#include "memory.H"
+#include "helper.H"
 /*
  * APPROXIMATE CACHE THAT TRACKS WHETHER A LINE IS UNRELIABLE OR NOT
  * 

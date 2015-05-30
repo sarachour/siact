@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include "xorshift.h"
+#include "xorshift.H"
 
 static uint32_t x32 = 314159265;
 static uint64_t x64 = 88172645463325252ull;

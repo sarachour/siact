@@ -1,4 +1,4 @@
-#include "cache.h"
+#include "cache.H"
 #include "pin.H"
 
 #include <sstream>

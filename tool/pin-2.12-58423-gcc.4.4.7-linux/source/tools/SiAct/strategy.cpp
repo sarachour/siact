@@ -1,5 +1,5 @@
-#include "helper.h"
-#include "strategy.h"
+#include "helper.H"
+#include "strategy.H"
 
 
 template <UINT32 MAX_ASSOCIATIVITY>
