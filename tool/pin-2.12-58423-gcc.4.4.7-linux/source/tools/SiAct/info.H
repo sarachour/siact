@@ -1,6 +1,7 @@
 #ifndef INFO_H
 #define INFO_H
 #include <set>
+#include <cstdlib>
 
 extern uint32_t N_SYS_CORRUPTIONS;
 
@@ -38,7 +39,7 @@ typedef enum TASK_ENUM_T{
 
 task_info_t ctask[N_TASKS];
 timer_info_t ctimer[N_TIMERS];
-std::set<int> active_timers;
+bool active_timers[N_TIMERS];
 std::set<int> active_tasks;
 
 task_info_t tasks[N_TASKS];
@@ -64,12 +65,45 @@ void sum_err_info(error_info_t * e, error_info_t * t){
 void init_timer(timer_info_t * tim){
 	tim->N_INSTR = 0;
 }
+
 double * store_timer(timer_info_t * e, double * d){
 	d[0] = e->N_INSTR;
 	return &d[1];
 }
+
+
 void sum_timer(timer_info_t * e, timer_info_t * t){
 	e->N_INSTR += t->N_INSTR;
+}
+
+typedef struct LOG_TIMER_INFO {
+	int instr;
+	int id;
+} log_timer_info_t;
+
+#define N_ENTRIES 300
+char filename[256];
+int ENTRY_IDX = 0;
+log_timer_info_t TIMER_BUFFER[N_ENTRIES];
+
+void log_timer(int id, timer_info_t * e){
+	if(ENTRY_IDX == N_ENTRIES - 1){
+		FILE * fp = fopen(filename,"w+");
+		for(int i=0; i < N_ENTRIES; i++){
+			log_timer_info_t tim = TIMER_BUFFER[i];
+			fprintf(fp, "%d\t%d\n", tim.id,tim.instr);
+		}
+		fclose(fp);
+		ENTRY_IDX = 0;
+		
+	}
+	TIMER_BUFFER[ENTRY_IDX].instr = (int) e->N_INSTR;
+	TIMER_BUFFER[ENTRY_IDX].id = id;
+	ENTRY_IDX++;
+	
+}
+void timer_set_filename(int idx){
+	sprintf(filename,"timer.%d.out", idx);
 }
 
 void init_task_info( task_info_t * task){
@@ -109,6 +143,7 @@ void init_all(){
 	for(int i=0; i < N_TIMERS; i++){
 		init_timer(&timers[i]);
 		init_timer(&ctimer[i]);
+		active_timers[i] = false;
 	}	
 	
 }
@@ -116,13 +151,12 @@ void init_all(){
 void timer_start(int id){
 	init_timer(&ctimer[id]);
 	//printf("PIN TIMER START:%f\n", ctimer[id].N_INSTR);
-	active_timers.insert(id);
+	active_timers[id] = true;
 }
-void timer_stop(int id, double * args){
-	sum_timer(&timers[id], &ctimer[id]);
-	//printf("PIN TIMER STOP:%f\n", ctimer[id].N_INSTR);
-	store_timer(&ctimer[id], args);
-	active_timers.erase(id);
+void timer_stop(int id){
+	log_timer(id,&ctimer[id]);
+	//sum_timer(&timers[id], &ctimer[id]);
+	active_timers[id] = false;
 }
 void task_start(int id){
 	init_task_info(&ctask[id]);
@@ -137,15 +171,20 @@ int task_active_count(){
 	return active_tasks.size();
 }
 void timer_inst(){
-	for(std::set<int>::iterator it =active_timers.begin(); it != active_timers.end(); ++it){
-		ctimer[*it].N_INSTR++;
+	for(int i=0; i < N_TIMERS; i++){
+		if(active_timers[i]){
+			ctimer[i].N_INSTR++;
+		}
 	}
 }
 
 void timer_inst_m(int n){
-	for(std::set<int>::iterator it =active_timers.begin(); it != active_timers.end(); ++it){
-		ctimer[*it].N_INSTR+= n;
+	for(int i=0; i < N_TIMERS; i++){
+		if(active_timers[i]){
+			ctimer[i].N_INSTR+=n;
+		}
 	}
+	
 }
 inline void _task_inst(task_info_t * t, task_enum_t type, bool instr, bool inj){
 	error_info_t * inf;

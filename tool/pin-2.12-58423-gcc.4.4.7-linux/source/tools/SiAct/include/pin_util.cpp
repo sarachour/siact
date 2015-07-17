@@ -14,7 +14,7 @@ void PIN_START_TIMER(int tidx){
 	
 }
 //stop timer 
-void PIN_STOP_TIMER(int tidxm, double * args){
+void PIN_STOP_TIMER(int tidxm){
 	
 }
 //start task error injection, start task recording
@@ -106,8 +106,8 @@ void pin_print_task(FILE * out, const char * name, pin_task_info_t * t){
 void pin_start_timer(int i){
 	PIN_START_TIMER(i);
 }
-void pin_stop_timer(int i, pin_timer_info_t * t){
-	PIN_STOP_TIMER(i, &t->inst);
+void pin_stop_timer(int i){
+	PIN_STOP_TIMER(i);
 }
 void pin_print_timer(FILE * out, const char * name, pin_timer_info_t *t){
 	fprintf(out, "%s\t%ld", name, t->inst);
