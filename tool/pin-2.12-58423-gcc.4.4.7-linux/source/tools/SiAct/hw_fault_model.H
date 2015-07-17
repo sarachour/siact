@@ -9,7 +9,7 @@
 #include <map>
 #include "cache.H"
 #include "approx.H"
-#include "info.H"
+
 #include "hierarchy.H"
 
 #define USE_HARDWARE_FAULT_MODEL
@@ -78,13 +78,6 @@ VOID setRGENSeed(){
 
 }
 
-int getHWModelIDX(){
-	if(loaded)
-		return model.idx;
-	else
-		return 9999;
-}
-
 VOID load_hardware_fault_model(ADDRINT model_ptr){
   unsigned int i;
   int model_index = model_ptr;
@@ -99,7 +92,6 @@ VOID load_hardware_fault_model(ADDRINT model_ptr){
       print_hardware_fault_model(stdout);
     }
   }
-  timer_set_filename(getHWModelIDX());
 
 }
 
@@ -189,6 +181,11 @@ void readHardwareFaultModelFile(){
     cout << "[HARDWARE] NO EXISTING FAULT MODEL. USING A NO-ERROR APPROACH" << endl;
   }
 }
-
+int getHWModelIDX(){
+	if(loaded)
+		return model.idx;
+	else
+		return 9999;
+}
 
 #endif

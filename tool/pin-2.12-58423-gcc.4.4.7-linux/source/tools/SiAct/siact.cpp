@@ -142,6 +142,7 @@ VOID BindFxns(RTN rtn, VOID *v){
 		case PIN_STOP_TIMER:
 			RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)timer_stop, 
 				IARG_FUNCARG_CALLSITE_VALUE, 0, 
+				IARG_FUNCARG_CALLSITE_VALUE, 1, 
 				IARG_END);
 			break;
 		case PIN_START_TASK:
@@ -276,7 +277,6 @@ int main(int argc, CHAR *argv[])
     init_all();
     //read hardware fault model file
     readHardwareFaultModelFile();
-    timer_set_filename(getHWModelIDX());
     //Read the list of AxC functions from axcFunctionList.txt file
     read_function_list();
     
