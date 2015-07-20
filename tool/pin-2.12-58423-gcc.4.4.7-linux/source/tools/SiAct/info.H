@@ -1,7 +1,6 @@
 #ifndef INFO_H
 #define INFO_H
 #include <set>
-#include <cstdlib>
 
 extern uint32_t N_SYS_CORRUPTIONS;
 
@@ -39,7 +38,7 @@ typedef enum TASK_ENUM_T{
 
 task_info_t ctask[N_TASKS];
 timer_info_t ctimer[N_TIMERS];
-bool active_timers[N_TIMERS];
+std::set<int> active_timers;
 std::set<int> active_tasks;
 
 task_info_t tasks[N_TASKS];
@@ -65,13 +64,10 @@ void sum_err_info(error_info_t * e, error_info_t * t){
 void init_timer(timer_info_t * tim){
 	tim->N_INSTR = 0;
 }
-
 double * store_timer(timer_info_t * e, double * d){
 	d[0] = e->N_INSTR;
 	return &d[1];
 }
-
-
 void sum_timer(timer_info_t * e, timer_info_t * t){
 	e->N_INSTR += t->N_INSTR;
 }
@@ -143,7 +139,6 @@ void init_all(){
 	for(int i=0; i < N_TIMERS; i++){
 		init_timer(&timers[i]);
 		init_timer(&ctimer[i]);
-		active_timers[i] = false;
 	}	
 	
 }
@@ -151,12 +146,13 @@ void init_all(){
 void timer_start(int id){
 	init_timer(&ctimer[id]);
 	//printf("PIN TIMER START:%f\n", ctimer[id].N_INSTR);
-	active_timers[id] = true;
+	active_timers.insert(id);
 }
-void timer_stop(int id){
-	log_timer(id,&ctimer[id]);
-	//sum_timer(&timers[id], &ctimer[id]);
-	active_timers[id] = false;
+void timer_stop(int id, double * args){
+	sum_timer(&timers[id], &ctimer[id]);
+	//printf("PIN TIMER STOP:%f\n", ctimer[id].N_INSTR);
+	store_timer(&ctimer[id], args);
+	active_timers.erase(id);
 }
 void task_start(int id){
 	init_task_info(&ctask[id]);
@@ -171,20 +167,15 @@ int task_active_count(){
 	return active_tasks.size();
 }
 void timer_inst(){
-	for(int i=0; i < N_TIMERS; i++){
-		if(active_timers[i]){
-			ctimer[i].N_INSTR++;
-		}
+	for(std::set<int>::iterator it =active_timers.begin(); it != active_timers.end(); ++it){
+		ctimer[*it].N_INSTR++;
 	}
 }
 
 void timer_inst_m(int n){
-	for(int i=0; i < N_TIMERS; i++){
-		if(active_timers[i]){
-			ctimer[i].N_INSTR+=n;
-		}
+	for(std::set<int>::iterator it =active_timers.begin(); it != active_timers.end(); ++it){
+		ctimer[*it].N_INSTR+= n;
 	}
-	
 }
 inline void _task_inst(task_info_t * t, task_enum_t type, bool instr, bool inj){
 	error_info_t * inf;
