@@ -103,7 +103,7 @@ void log_timer(int id, timer_info_t * e){
 	
 }
 void timer_set_filename(int idx){
-	sprintf(filename,"timer.%d.out", idx);
+	sprintf(filename,"emul.timer.%d.out", idx);
 }
 
 void init_task_info( task_info_t * task){
