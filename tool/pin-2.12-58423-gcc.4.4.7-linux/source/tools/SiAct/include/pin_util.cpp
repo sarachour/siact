@@ -17,6 +17,14 @@ void PIN_START_TIMER(int tidx){
 void PIN_STOP_TIMER(int tidxm, double * args){
 	
 }
+
+//start timer
+void PIN_DISABLE_TIMERS(){
+	
+}
+void PIN_ENABLE_TIMERS(){
+	
+}
 //start task error injection, start task recording
 void PIN_START_TASK(int tidx){
 	
@@ -102,6 +110,12 @@ void pin_print_task(FILE * out, const char * name, pin_task_info_t * t){
 	pin_print_err(out, "MEM_WRITE", &t->mwrite); fprintf(out, "\t");
 	pin_print_err(out, "MEM", &t->mem); fprintf(out, "\t");
 	fprintf(out, "%ld", t->total);
+}
+void pin_disable_timers(){
+	PIN_DISABLE_TIMERS();
+}
+void pin_enable_timers(){
+	PIN_ENABLE_TIMERS();
 }
 void pin_start_timer(int i){
 	PIN_START_TIMER(i);

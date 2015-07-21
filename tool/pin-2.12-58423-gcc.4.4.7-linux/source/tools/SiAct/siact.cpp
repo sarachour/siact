@@ -145,6 +145,14 @@ VOID BindFxns(RTN rtn, VOID *v){
 				IARG_FUNCARG_CALLSITE_VALUE, 1, 
 				IARG_END);
 			break;
+		case PIN_DISABLE_TIMERS:
+			RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)timers_disable, 
+				IARG_END);
+			break;
+		case PIN_ENABLE_TIMERS:
+			RTN_InsertCall(rtn, IPOINT_BEFORE, (AFUNPTR)timers_enable, 
+				IARG_END);
+			break;
 		case PIN_START_TASK:
 			RTN_InsertCall(rtn, IPOINT_AFTER, (AFUNPTR)TASK_START, 
 				IARG_FUNCARG_CALLSITE_VALUE, 0, 
@@ -207,11 +215,7 @@ VOID Trace(TRACE trace, VOID *v)
 			numins += 1;
 			size += INS_Size(ins);
 			if(INJECT){
-				if( INS_IsSyscall(ins) )
-				{
-					InstrumentTimerInstruction(ins); 
-				}
-				else
+				if( !INS_IsSyscall(ins) )
 				{
 					InstrumentNormalInstruction(ins); 
 				}
@@ -221,7 +225,7 @@ VOID Trace(TRACE trace, VOID *v)
         
         
         // fast-track instruction count for timer is no injection
-        INS_InsertCall(BBL_InsHead(bbl), IPOINT_BEFORE, AFUNPTR(timer_inst_m), IARG_FAST_ANALYSIS_CALL, IARG_UINT32, numins, IARG_END);
+        INS_InsertCall(BBL_InsTail(bbl), IPOINT_BEFORE, AFUNPTR(timer_inst_m), IARG_FAST_ANALYSIS_CALL, IARG_UINT32, numins, IARG_END);
 
     }
 

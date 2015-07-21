@@ -72,10 +72,14 @@ bool is_timer_end(string functionName){test_name(functionName, "PIN_STOP_TIMER",
 bool is_start_inject(string functionName){test_name(functionName, "PIN_START_INJECT_ERRORS", "Found Injection Starting Function");}
 bool is_stop_inject(string functionName){test_name(functionName, "PIN_STOP_INJECT_ERRORS", "Found Injection Stopping Function");}
 bool is_urel_alloc(string functionName){test_name(functionName, "PIN_UREL_MALLOC", "Found Unreliable Malloc Function");}
+bool is_enable_timers(string functionName){test_name(functionName, "PIN_ENABLE_TIMERS", "Found Timers Disable");}
+bool is_disable_timers(string functionName){test_name(functionName, "PIN_DISABLE_TIMERS", "Found Timers Enable");}
 
 typedef enum FUNCTION_TYPE_T {
 	PIN_STOP_TIMER,
 	PIN_START_TIMER,
+	PIN_DISABLE_TIMERS,
+	PIN_ENABLE_TIMERS,
 	PIN_BIND_FXN,
 	PIN_START_TASK,
 	PIN_STOP_TASK,
@@ -84,7 +88,7 @@ typedef enum FUNCTION_TYPE_T {
 	PIN_NORMAL,
 	PIN_DRAM_REFRESH,
 	PIN_LISTED_FUNCTION,
-	PIN_ALLOC_UREL
+	PIN_ALLOC_UREL,
 } function_type_t;
 
 function_type_t get_function_type(string functionName){
@@ -106,6 +110,10 @@ function_type_t get_function_type(string functionName){
 			return PIN_DRAM_REFRESH;
 		else if(is_urel_alloc(functionName))
 			return PIN_ALLOC_UREL;
+		else if(is_disable_timers(functionName))
+			return PIN_DISABLE_TIMERS;
+		else if(is_enable_timers(functionName))
+			return PIN_ENABLE_TIMERS;
 		else if(is_in_function_list(functionName))
 			return PIN_LISTED_FUNCTION;
 		else

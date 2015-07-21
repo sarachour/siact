@@ -81,6 +81,7 @@ typedef struct LOG_TIMER_INFO {
 char filename[256];
 int ENTRY_IDX = 0;
 log_timer_info_t TIMER_BUFFER[N_ENTRIES];
+bool TIMERS_DISABLED=false;
 
 void log_timer(int id, timer_info_t * e){
 	if(ENTRY_IDX == N_ENTRIES - 1){
@@ -143,6 +144,12 @@ void init_all(){
 	
 }
 
+void timers_disable(){
+	TIMERS_DISABLED = true;
+}
+void timers_enable(){
+	TIMERS_DISABLED = false;
+}
 void timer_start(int id){
 	init_timer(&ctimer[id]);
 	//printf("PIN TIMER START:%f\n", ctimer[id].N_INSTR);
@@ -167,12 +174,14 @@ int task_active_count(){
 	return active_tasks.size();
 }
 void timer_inst(){
+	if(TIMERS_DISABLED) return;
 	for(std::set<int>::iterator it =active_timers.begin(); it != active_timers.end(); ++it){
-		ctimer[*it].N_INSTR++;
+		ctimer[*it].N_INSTR+=1;
 	}
 }
 
 void timer_inst_m(int n){
+	if(TIMERS_DISABLED) return;
 	for(std::set<int>::iterator it =active_timers.begin(); it != active_timers.end(); ++it){
 		ctimer[*it].N_INSTR+= n;
 	}

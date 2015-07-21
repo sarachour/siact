@@ -34,6 +34,9 @@ typedef struct PIN_TIMER_INFO{
 
 //bind the hardware model
 void PIN_BIND_MODEL(int midx);
+void PIN_DISABLE_TIMERS();
+void PIN_ENABLE_TIMERS();
+void PIN_START_TIMER(int tidx);
 void PIN_START_TIMER(int tidx);
 void PIN_STOP_TIMER(int tidxm, double * args);
 void PIN_START_TASK(int tidx);
@@ -43,6 +46,8 @@ void PIN_STOP_INJECT_ERRORS();
 void PIN_REFRESH_DRAM();
 void PIN_UREL_MALLOC(uint64_t addr, uint32_t size);
 
+void pin_disable_timers();
+void pin_enable_timers();
 void pin_start_inject_errors();
 void pin_stop_inject_errors();
 void pin_bind_model(int midx);
