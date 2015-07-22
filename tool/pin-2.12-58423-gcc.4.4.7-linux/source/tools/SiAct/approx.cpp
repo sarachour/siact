@@ -217,7 +217,6 @@ APPROXMEMORY::APPROXMEMORY(ApproximateMemoryModel model, MEMORY_ADDR_RANGES * re
 
 
 void APPROXMEMORY::Refresh(){
-	printf("Refresh Memory\n");
 	this->regions->refresh_all();
 }
 void APPROXMEMORY::Accumulate(float msec){
