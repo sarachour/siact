@@ -3,6 +3,7 @@
 
 std::set<string> function_list;
 
+
 KNOB<string> KnobFunctionList(KNOB_MODE_WRITEONCE,    "pintool", "t", "trace.config", "specify output file name");
     
 void read_function_list()
