@@ -63,7 +63,7 @@ KNOB<string> KnobHardwareSpecFile(KNOB_MODE_WRITEONCE, "pintool",
   "hwmodel", "hardwareModel.txt", "specify mappings to a hardware model");
 
 
-KNOB<INT> KnobGlobalSeed (KNOB_MODE_WRITEONCE, "pintool", "s", 0, "Set global seed");
+KNOB<INT> KnobGlobalSeed (KNOB_MODE_WRITEONCE, "pintool", "s", "0", "Set global seed");
 
 void print_hardware_fault_model(FILE * out){
   fprintf(out, "Hardware Fault Model Info\n");
